@@ -1,298 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>liminaal</title>
-  <meta name="description" content="Liminaal — eerie and aesthetic music gallery." />
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Unbounded', sans-serif;
-      background: #000;
-      color: #f5f5f5;
-      overflow-x: hidden;
-    }
-    .loader {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #000;
-      z-index: 9999;
-      font-size: 2rem;
-      letter-spacing: 2px;
-      animation: fadeOut 1s ease 4s forwards;
-    }
-    @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>liminaal</title>
+<meta name="description" content="Liminaal - eerie and aesthetic music gallery." />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Unbounded', sans-serif;
+  background: #000;
+  color: #f5f5f5;
+  overflow-x: hidden;
+}
 
-    @keyframes popupFadeIn {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-    @keyframes popupFadeOut {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.95); }
-    }
+/* Loader */
+.loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  z-index: 9999;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  animation: fadeOut 1s ease 4s forwards;
+}
+@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 100px 20px;
-    }
-    h1, h2 {
-      text-align: center;
-      color: #f5f5f5;
-      text-shadow: 0 0 20px rgba(255,255,255,0.2);
-    }
-    h1 { font-size: 3rem; margin-bottom: 2rem; }
-    h2 { font-size: 2rem; margin: 3rem 0 1rem; }
+/* Animations */
+@keyframes popupFadeIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes popupFadeOut {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.95); }
+}
 
-    .spotify-player {
-      display: flex;
-      justify-content: center;
-      margin: 2rem 0;
-    }
-    iframe {
-      border-radius: 12px;
-      box-shadow: 0 0 30px rgba(255,255,255,0.1);
-    }
+/* Layout */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 100px 20px;
+}
 
-    .image-placeholder {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 3rem;
-    }
-    .image-box {
-      position: relative;
-      width: 100%;
-      height: 250px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      color: rgba(255,255,255,0.3);
-      background-size: cover;
-      background-position: center;
-      cursor: pointer;
-      transition: transform 0.5s ease, box-shadow 0.5s ease, color 0.4s ease;
-      overflow: hidden;
-      perspective: 1000px;
-    }
-    .image-box::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.05);
-      transition: background 0.4s ease;
-      z-index: 0;
-    }
-    .image-box::after {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
-      transform: rotate(30deg);
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      z-index: 1;
-    }
-    .image-box:hover {
-      transform: scale(1.05) rotateX(4deg) rotateY(2deg);
-      box-shadow: 0 0 40px rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.9);
-    }
-    .image-box:hover::before {
-      background: rgba(255,255,255,0.1);
-    }
-    .image-box:hover::after {
-      opacity: 0.5;
-    }
+h1, h2 {
+  text-align: center;
+  color: #f5f5f5;
+  text-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+h1 { font-size: 3rem; margin-bottom: 2rem; }
+h2 { font-size: 2rem; margin: 3rem 0 1rem; }
 
-    /* Collaborators section */
-    .collaborators {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    .collaborator {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255,255,255,0.05);
-      padding: 5px; /* tight padding */
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(255,255,255,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: default;
-    }
-    .collaborator:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(255,255,255,0.2);
-    }
-    .collaborator img {
-      max-width: 25%; /* small image */
-      height: auto;
-      object-fit: contain;
-      margin: 5px; /* distance around the image */
-      border: none;
-    }
-    .collaborator-name {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #f5f5f5;
-      margin: 0;
-    }
+.spotify-player {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+iframe {
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(255,255,255,0.1);
+}
 
-    footer {
-      text-align: center;
-      padding: 2rem 0;
-      font-size: 0.9rem;
-      color: rgba(245,245,245,0.7);
-    }
+/* Gallery */
+.image-placeholder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 3rem;
+}
+.image-box {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.3);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.5s ease, box-shadow 0.5s ease, color 0.4s ease;
+  overflow: hidden;
+  perspective: 1000px;
+}
+.image-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.05);
+  transition: background 0.4s ease;
+  z-index: 0;
+}
+.image-box::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+  transform: rotate(30deg);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 1;
+}
+.image-box:hover {
+  transform: scale(1.05) rotateX(4deg) rotateY(2deg);
+  box-shadow: 0 0 40px rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+}
+.image-box:hover::before { background: rgba(255,255,255,0.1); }
+.image-box:hover::after { opacity: 0.5; }
 
-    /* Popups */
-    .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
-    .popup-overlay.show { display: flex; animation: popupFadeIn 0.4s ease forwards; }
-    .popup-overlay.hide { animation: popupFadeOut 0.3s ease forwards; }
-    .popup-content { display: flex; max-width: 900px; width: 100%; background: rgba(15,15,15,0.95); border-radius: 12px; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.7); }
-    .popup-image { flex: 1; background-size: cover; background-position: center; min-height: 400px; cursor: zoom-in; }
-    .popup-info { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
-    .popup-info h2 { margin-bottom: 10px; font-size: 1.8rem; color: #f5f5f5; }
-    .popup-info p { font-size: 1rem; color: rgba(245,245,245,0.8); }
-    .popup-close { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; }
+/* Collaborators */
+.collaborators {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.collaborator {
+  flex: 1 1 200px; /* ensures side-by-side layout */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.collaborator:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(255,255,255,0.2);
+}
+.collaborator img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 0;
+}
+.collaborator-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f5f5f5;
+}
 
-    .image-viewer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10001; justify-content: center; align-items: center; animation: popupFadeIn 0.4s ease forwards; }
-    .image-viewer-content { max-width: 90%; max-height: 90%; position: relative; }
-    .image-viewer-content img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 0 40px rgba(255,255,255,0.2); }
-    .image-viewer-close { position: absolute; top: -40px; right: 0; font-size: 2rem; color: #fff; cursor: pointer; }
-  </style>
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+  color: rgba(245,245,245,0.7);
+}
+</style>
 </head>
 <body>
-  <div class="loader">liminaalizing…</div>
-  <div class="container">
-    <h1>liminaal</h1>
-    <div class="spotify-player">
-      <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    </div>
-
-    <div class="image-placeholder">
-      <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found..." style="background-image:url('/assets/images/hospital.png')">Abandoned Hospital</div>
-      <div class="image-box" data-title="Preview 2" data-desc="This is the description for Preview 2." style="background-image:url('https://picsum.photos/400/250?random=2')">Preview 2</div>
-      <div class="image-box" data-title="Preview 3" data-desc="This is the description for Preview 3." style="background-image:url('https://picsum.photos/400/250?random=3')">Preview 3</div>
-      <div class="image-box" data-title="Preview 4" data-desc="This is the description for Preview 4." style="background-image:url('https://picsum.photos/400/250?random=4')">Preview 4</div>
-    </div>
-
-    <!-- Collaborators Section -->
-    <h2>Collaborators</h2>
-    <div class="collaborators">
-      <!-- Kaido -->
-      <div class="collaborator">
-        <img src="/assets/mii/Kaido head.png" alt="Kaido">
-        <div class="collaborator-name">Kaido</div>
-      </div>
-
-      <!-- Awitax -->
-      <div class="collaborator">
-        <img src="/assets/mii/Awitax head.png" alt="Awitax">
-        <div class="collaborator-name">Awitax</div>
-      </div>
-
-      <!--
-      Additional collaborators (copy the block below):
-      <div class="collaborator">
-        <img src="URL_TO_MII" alt="Mii Name">
-        <div class="collaborator-name">Artist Name</div>
-      </div>
-      -->
-    </div>
+<div class="loader">liminaalizing ...</div>
+<div class="container">
+  <h1>liminaal</h1>
+  <div class="spotify-player">
+    <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   </div>
 
-  <footer>&copy; liminaal</footer>
-
-  <!-- Popup -->
-  <div class="popup-overlay" id="popup">
-    <div class="popup-content">
-      <div class="popup-image" id="popup-image"></div>
-      <div class="popup-info">
-        <h2 id="popup-title"></h2>
-        <p id="popup-desc"></p>
-      </div>
-      <div class="popup-close" id="popup-close">&times;</div>
-    </div>
+  <!-- Gallery -->
+  <div class="image-placeholder">
+    <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found ..." style="background-image:url('/assets/images/hospital.png')">Abandoned Hospital</div>
+    <div class="image-box" data-title="Preview 2" data-desc="This is the description for Preview 2." style="background-image:url('https://picsum.photos/400/250?random=2')">Preview 2</div>
+    <div class="image-box" data-title="Preview 3" data-desc="This is the description for Preview 3." style="background-image:url('https://picsum.photos/400/250?random=3')">Preview 3</div>
+    <div class="image-box" data-title="Preview 4" data-desc="This is the description for Preview 4." style="background-image:url('https://picsum.photos/400/250?random=4')">Preview 4</div>
   </div>
 
-  <!-- Full Image Viewer Popup -->
-  <div class="image-viewer-overlay" id="image-viewer">
-    <div class="image-viewer-content">
-      <span class="image-viewer-close" id="viewer-close">&times;</span>
-      <img id="viewer-img" src="" alt="Full view" />
+  <!-- Collaborators Section -->
+  <h2>Collaborators</h2>
+  <div class="collaborators">
+    <!-- Kaido -->
+    <div class="collaborator">
+      <img src="/assets/mii/Kaido head.png" alt="Kaido">
+      <div class="collaborator-name">Kaido</div>
     </div>
+    <!-- Awitax -->
+    <div class="collaborator">
+      <img src="/assets/mii/Awitax head.png" alt="Awitax">
+      <div class="collaborator-name">Awitax</div>
+    </div>
+    <!--
+    To add more collaborators, copy this block:
+    <div class="collaborator">
+      <img src="URL_TO_MII" alt="Mii Name">
+      <div class="collaborator-name">Artist Name</div>
+    </div>
+    -->
   </div>
+</div>
 
-  <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => document.querySelector('.loader').style.display = 'none', 5000);
-    });
-
-    const popup = document.getElementById('popup');
-    const popupImage = document.getElementById('popup-image');
-    const popupTitle = document.getElementById('popup-title');
-    const popupDesc = document.getElementById('popup-desc');
-    const popupClose = document.getElementById('popup-close');
-
-    const viewer = document.getElementById('image-viewer');
-    const viewerImg = document.getElementById('viewer-img');
-    const viewerClose = document.getElementById('viewer-close');
-
-    document.querySelectorAll('.image-box').forEach(box => {
-      box.addEventListener('click', () => {
-        const bgImage = box.style.backgroundImage;
-        const imageUrl = bgImage.slice(5, -2);
-        popupImage.style.backgroundImage = bgImage;
-        popupImage.setAttribute('data-img', imageUrl);
-        popupTitle.textContent = box.dataset.title;
-        popupDesc.textContent = box.dataset.desc;
-        popup.classList.remove('hide');
-        popup.style.display = 'flex';
-        popup.classList.add('show');
-      });
-    });
-
-    function closePopup() {
-      popup.classList.remove('show');
-      popup.classList.add('hide');
-      setTimeout(() => {
-        popup.style.display = 'none';
-        popup.classList.remove('hide');
-      }, 300);
-    }
-
-    popupClose.addEventListener('click', closePopup);
-    popup.addEventListener('click', e => { if (e.target === popup) closePopup(); });
-
-    popupImage.addEventListener('click', () => {
-      const imgUrl = popupImage.getAttribute('data-img');
-      viewerImg.src = imgUrl;
-      viewer.style.display = 'flex';
-    });
-
-    viewerClose.addEventListener('click', () => { viewer.style.display = 'none'; });
-    viewer.addEventListener('click', e => { if (e.target === viewer) viewer.style.display = 'none'; });
-  </script>
+<footer>&copy; liminaal</footer>
 </body>
 </html>
