@@ -44,13 +44,14 @@
       margin: 0 auto;
       padding: 100px 20px;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
-      font-size: 3rem;
-      margin-bottom: 2rem;
       color: #f5f5f5;
       text-shadow: 0 0 20px rgba(255,255,255,0.2);
     }
+    h1 { font-size: 3rem; margin-bottom: 2rem; }
+    h2 { font-size: 2rem; margin: 3rem 0 1rem; }
+
     .spotify-player {
       display: flex;
       justify-content: center;
@@ -60,6 +61,7 @@
       border-radius: 12px;
       box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }
+
     .image-placeholder {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -118,6 +120,44 @@
     .image-box:hover::after {
       opacity: 0.5;
     }
+
+    /* Collaborators section */
+    .collaborators {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .collaborator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: default;
+    }
+    .collaborator:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(255,255,255,0.2);
+    }
+    .collaborator img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain; /* keeps original aspect ratio */
+      margin-bottom: 1rem;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 0; /* no circular crop */
+    }
+    .collaborator-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #f5f5f5;
+    }
+
     footer {
       text-align: center;
       padding: 2rem 0;
@@ -125,93 +165,21 @@
       color: rgba(245,245,245,0.7);
     }
 
-    .popup-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 10000;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    .popup-overlay.show {
-      display: flex;
-      animation: popupFadeIn 0.4s ease forwards;
-    }
-    .popup-overlay.hide {
-      animation: popupFadeOut 0.3s ease forwards;
-    }
-    .popup-content {
-      display: flex;
-      max-width: 900px;
-      width: 100%;
-      background: rgba(15,15,15,0.95);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 0 40px rgba(0,0,0,0.7);
-    }
-    .popup-image {
-      flex: 1;
-      background-size: cover;
-      background-position: center;
-      min-height: 400px;
-      cursor: zoom-in;
-    }
-    .popup-info {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .popup-info h2 {
-      margin-bottom: 10px;
-      font-size: 1.8rem;
-      color: #f5f5f5;
-    }
-    .popup-info p {
-      font-size: 1rem;
-      color: rgba(245,245,245,0.8);
-    }
-    .popup-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 2rem;
-      color: #fff;
-      cursor: pointer;
-    }
+    /* Popups */
+    .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
+    .popup-overlay.show { display: flex; animation: popupFadeIn 0.4s ease forwards; }
+    .popup-overlay.hide { animation: popupFadeOut 0.3s ease forwards; }
+    .popup-content { display: flex; max-width: 900px; width: 100%; background: rgba(15,15,15,0.95); border-radius: 12px; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.7); }
+    .popup-image { flex: 1; background-size: cover; background-position: center; min-height: 400px; cursor: zoom-in; }
+    .popup-info { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
+    .popup-info h2 { margin-bottom: 10px; font-size: 1.8rem; color: #f5f5f5; }
+    .popup-info p { font-size: 1rem; color: rgba(245,245,245,0.8); }
+    .popup-close { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; }
 
-    .image-viewer-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 10001;
-      justify-content: center;
-      align-items: center;
-      animation: popupFadeIn 0.4s ease forwards;
-    }
-    .image-viewer-content {
-      max-width: 90%;
-      max-height: 90%;
-      position: relative;
-    }
-    .image-viewer-content img {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 0 40px rgba(255,255,255,0.2);
-    }
-    .image-viewer-close {
-      position: absolute;
-      top: -40px;
-      right: 0;
-      font-size: 2rem;
-      color: #fff;
-      cursor: pointer;
-    }
+    .image-viewer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10001; justify-content: center; align-items: center; animation: popupFadeIn 0.4s ease forwards; }
+    .image-viewer-content { max-width: 90%; max-height: 90%; position: relative; }
+    .image-viewer-content img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 0 40px rgba(255,255,255,0.2); }
+    .image-viewer-close { position: absolute; top: -40px; right: 0; font-size: 2rem; color: #fff; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -221,13 +189,39 @@
     <div class="spotify-player">
       <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
+
     <div class="image-placeholder">
       <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found..." style="background-image:url('/assets/images/hospital.png')">Abandoned Hospital</div>
       <div class="image-box" data-title="Preview 2" data-desc="This is the description for Preview 2." style="background-image:url('https://picsum.photos/400/250?random=2')">Preview 2</div>
       <div class="image-box" data-title="Preview 3" data-desc="This is the description for Preview 3." style="background-image:url('https://picsum.photos/400/250?random=3')">Preview 3</div>
       <div class="image-box" data-title="Preview 4" data-desc="This is the description for Preview 4." style="background-image:url('https://picsum.photos/400/250?random=4')">Preview 4</div>
     </div>
+
+    <!-- Collaborators Section -->
+    <h2>Collaborators</h2>
+    <div class="collaborators">
+      <!-- Kaido -->
+      <div class="collaborator">
+        <img src="/assets/mii/Kaido head.png" alt="Kaido">
+        <div class="collaborator-name">Kaido</div>
+      </div>
+
+      <!-- Awitax -->
+      <div class="collaborator">
+        <img src="/assets/mii/Awitax head.png" alt="Awitax">
+        <div class="collaborator-name">Awitax</div>
+      </div>
+
+      <!--
+      Additional collaborators (add more by copying the block below):
+      <div class="collaborator">
+        <img src="URL_TO_MII" alt="Mii Name">
+        <div class="collaborator-name">Artist Name</div>
+      </div>
+      -->
+    </div>
   </div>
+
   <footer>&copy; liminaal</footer>
 
   <!-- Popup -->
@@ -268,7 +262,7 @@
     document.querySelectorAll('.image-box').forEach(box => {
       box.addEventListener('click', () => {
         const bgImage = box.style.backgroundImage;
-        const imageUrl = bgImage.slice(5, -2); // Extract URL from background-image
+        const imageUrl = bgImage.slice(5, -2);
         popupImage.style.backgroundImage = bgImage;
         popupImage.setAttribute('data-img', imageUrl);
         popupTitle.textContent = box.dataset.title;
@@ -289,9 +283,7 @@
     }
 
     popupClose.addEventListener('click', closePopup);
-    popup.addEventListener('click', e => {
-      if (e.target === popup) closePopup();
-    });
+    popup.addEventListener('click', e => { if (e.target === popup) closePopup(); });
 
     popupImage.addEventListener('click', () => {
       const imgUrl = popupImage.getAttribute('data-img');
@@ -299,15 +291,8 @@
       viewer.style.display = 'flex';
     });
 
-    viewerClose.addEventListener('click', () => {
-      viewer.style.display = 'none';
-    });
-
-    viewer.addEventListener('click', e => {
-      if (e.target === viewer) {
-        viewer.style.display = 'none';
-      }
-    });
+    viewerClose.addEventListener('click', () => { viewer.style.display = 'none'; });
+    viewer.addEventListener('click', e => { if (e.target === viewer) viewer.style.display = 'none'; });
   </script>
 </body>
 </html>
