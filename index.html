@@ -17,6 +17,7 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Loader */
 .loader {
   position: fixed;
   inset: 0;
@@ -29,13 +30,37 @@ html, body {
   letter-spacing: 2px;
   animation: fadeOut 1s ease 4s forwards;
 }
+.loader::after {
+  content: '';
+  display: block;
+  width: 60px;
+  aspect-ratio: 2;
+  --_g: no-repeat radial-gradient(circle closest-side,#f5f5f5 90%,#0000);
+  background: 
+    var(--_g) 0%   50%,
+    var(--_g) 50%  50%,
+    var(--_g) 100% 50%;
+  background-size: calc(100%/3) 50%;
+  animation: l3 1s infinite linear;
+  margin-left: 10px;
+}
+@keyframes l3 {
+  20% { background-position:0% 0%, 50% 50%,100% 50%; }
+  40% { background-position:0% 100%, 50% 0%,100% 50%; }
+  60% { background-position:0% 50%, 50% 100%,100% 0%; }
+  80% { background-position:0% 50%, 50% 50%,100% 100%; }
+}
 @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
 
+/* Container fade-in */
 .container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 100px 20px;
+  opacity: 0;
+  animation: fadeIn 1s ease 4s forwards;
 }
+@keyframes fadeIn { to { opacity: 1; } }
 
 h1, h2 {
   text-align: center;
@@ -55,6 +80,7 @@ iframe {
   box-shadow: 0 0 30px rgba(255,255,255,0.1);
 }
 
+/* Gallery */
 .image-placeholder {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -110,40 +136,6 @@ iframe {
 .image-box:hover::before { background: rgba(255,255,255,0.1); }
 .image-box:hover::after { opacity: 0.5; }
 
-/* Popup styles */
-.popup-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-}
-.popup-content {
-  max-width: 600px;
-  width: 90%;
-  background: rgba(20,20,20,0.95);
-  border-radius: 12px;
-  padding: 1rem;
-  text-align: center;
-  color: #fff;
-  position: relative;
-}
-.popup-content img {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-}
-.popup-content h3 {
-  margin: 0.5rem 0;
-}
-.popup-content p {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.8);
-}
-
 /* Collaborators */
 .collaborators {
   display: flex;
@@ -188,10 +180,56 @@ footer {
   font-size: 0.9rem;
   color: rgba(245,245,245,0.7);
 }
+
+/* Popup Modal */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10000;
+}
+.popup.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.popup-content {
+  background: rgba(20,20,20,0.95);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  padding: 1.5rem;
+  text-align: center;
+  animation: popupIn 0.4s ease forwards;
+  transform: scale(0.8);
+  color: #f5f5f5;
+}
+.popup-content img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+.popup-content h3 {
+  margin: 0.5rem 0;
+}
+.popup-content p {
+  color: rgba(245,245,245,0.8);
+  font-size: 0.95rem;
+}
+@keyframes popupIn {
+  to { transform: scale(1); }
+}
 </style>
 </head>
 <body>
-<div class="loader">liminaalizing ...</div>
+
+<div class="loader">liminaalizing</div>
+
 <div class="container">
   <h1>liminaal</h1>
   <div class="spotify-player">
@@ -200,10 +238,10 @@ footer {
 
   <!-- Gallery -->
   <div class="image-placeholder">
-    <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found ..." style="background-image:url('/assets/images/hospital.png')">Abandoned Hospital</div>
-    <div class="image-box" data-title="Preview 2" data-desc="This is the description for Preview 2." style="background-image:url('https://picsum.photos/400/250?random=2')">Preview 2</div>
-    <div class="image-box" data-title="Preview 3" data-desc="This is the description for Preview 3." style="background-image:url('https://picsum.photos/400/250?random=3')">Preview 3</div>
-    <div class="image-box" data-title="Preview 4" data-desc="This is the description for Preview 4." style="background-image:url('https://picsum.photos/400/250?random=4')">Preview 4</div>
+    <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found ..." data-img="/assets/images/hospital.png" style="background-image:url('/assets/images/hospital.png')">Abandoned Hospital</div>
+    <div class="image-box" data-title="Preview 2" data-desc="This is the description for Preview 2." data-img="https://picsum.photos/400/250?random=2" style="background-image:url('https://picsum.photos/400/250?random=2')">Preview 2</div>
+    <div class="image-box" data-title="Preview 3" data-desc="This is the description for Preview 3." data-img="https://picsum.photos/400/250?random=3" style="background-image:url('https://picsum.photos/400/250?random=3')">Preview 3</div>
+    <div class="image-box" data-title="Preview 4" data-desc="This is the description for Preview 4." data-img="https://picsum.photos/400/250?random=4" style="background-image:url('https://picsum.photos/400/250?random=4')">Preview 4</div>
   </div>
 
   <!-- Collaborators Section -->
@@ -220,38 +258,38 @@ footer {
   </div>
 </div>
 
-<!-- Popup Overlay -->
-<div class="popup-overlay" id="popup">
-  <div class="popup-content" id="popupContent">
-    <img id="popupImage" src="" alt="">
-    <h3 id="popupTitle"></h3>
-    <p id="popupDesc"></p>
+<!-- Popup Modal -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <img src="" alt="Popup Image" id="popup-img">
+    <h3 id="popup-title"></h3>
+    <p id="popup-desc"></p>
   </div>
 </div>
 
 <footer>&copy; liminaal</footer>
 
 <script>
-// Popup logic
-const imageBoxes = document.querySelectorAll('.image-box');
-const popup = document.getElementById('popup');
-const popupImage = document.getElementById('popupImage');
-const popupTitle = document.getElementById('popupTitle');
-const popupDesc = document.getElementById('popupDesc');
+// Wait for the page to load
+document.addEventListener('DOMContentLoaded', () => {
+  const boxes = document.querySelectorAll('.image-box');
+  const popup = document.getElementById('popup');
+  const popupImg = document.getElementById('popup-img');
+  const popupTitle = document.getElementById('popup-title');
+  const popupDesc = document.getElementById('popup-desc');
 
-imageBoxes.forEach(box => {
-  box.addEventListener('click', () => {
-    const bg = box.style.backgroundImage.slice(5, -2); // extract URL
-    popupImage.src = bg;
-    popupTitle.textContent = box.dataset.title;
-    popupDesc.textContent = box.dataset.desc;
-    popup.style.display = 'flex';
+  boxes.forEach(box => {
+    box.addEventListener('click', () => {
+      popupImg.src = box.dataset.img;
+      popupTitle.textContent = box.dataset.title;
+      popupDesc.textContent = box.dataset.desc;
+      popup.classList.add('active');
+    });
   });
-});
 
-// Close popup on click anywhere
-popup.addEventListener('click', () => {
-  popup.style.display = 'none';
+  popup.addEventListener('click', () => {
+    popup.classList.remove('active');
+  });
 });
 </script>
 </body>
