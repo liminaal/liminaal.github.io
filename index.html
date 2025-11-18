@@ -110,16 +110,50 @@ iframe {
 .image-box:hover::before { background: rgba(255,255,255,0.1); }
 .image-box:hover::after { opacity: 0.5; }
 
+/* Popup styles */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+.popup-content {
+  max-width: 600px;
+  width: 90%;
+  background: rgba(20,20,20,0.95);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  color: #fff;
+  position: relative;
+}
+.popup-content img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+.popup-content h3 {
+  margin: 0.5rem 0;
+}
+.popup-content p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+}
+
 /* Collaborators */
 .collaborators {
   display: flex;
   justify-content: center;
-  gap: 1rem; /* tighter horizontal spacing */
+  gap: 1rem;
   margin-top: 2rem;
   flex-wrap: wrap;
 }
 .collaborator {
-  flex: 0 1 140px; /* smaller base width */
+  flex: 0 1 140px;
   max-width: 140px;
   display: flex;
   flex-direction: column;
@@ -175,26 +209,50 @@ footer {
   <!-- Collaborators Section -->
   <h2>Collaborators</h2>
   <div class="collaborators">
-    <!-- Kaido -->
     <div class="collaborator">
       <img src="/assets/mii/Kaido head.png" alt="Kaido">
       <div class="collaborator-name">Kaido</div>
     </div>
-    <!-- Awitax -->
     <div class="collaborator">
       <img src="/assets/mii/Awitax head.png" alt="Awitax">
       <div class="collaborator-name">Awitax</div>
     </div>
-    <!--
-    To add more collaborators, copy this block:
-    <div class="collaborator">
-      <img src="/assets/mii/NAME head.png" alt="NAME">
-      <div class="collaborator-name">NAME</div>
-    </div>
-    -->
+  </div>
+</div>
+
+<!-- Popup Overlay -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-content" id="popupContent">
+    <img id="popupImage" src="" alt="">
+    <h3 id="popupTitle"></h3>
+    <p id="popupDesc"></p>
   </div>
 </div>
 
 <footer>&copy; liminaal</footer>
+
+<script>
+// Popup logic
+const imageBoxes = document.querySelectorAll('.image-box');
+const popup = document.getElementById('popup');
+const popupImage = document.getElementById('popupImage');
+const popupTitle = document.getElementById('popupTitle');
+const popupDesc = document.getElementById('popupDesc');
+
+imageBoxes.forEach(box => {
+  box.addEventListener('click', () => {
+    const bg = box.style.backgroundImage.slice(5, -2); // extract URL
+    popupImage.src = bg;
+    popupTitle.textContent = box.dataset.title;
+    popupDesc.textContent = box.dataset.desc;
+    popup.style.display = 'flex';
+  });
+});
+
+// Close popup on click anywhere
+popup.addEventListener('click', () => {
+  popup.style.display = 'none';
+});
+</script>
 </body>
 </html>
