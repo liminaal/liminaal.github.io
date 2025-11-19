@@ -18,6 +18,37 @@ h1{text-align:center;margin:0 0 18px;font-size:3rem}
 .spotify-player{display:flex;justify-content:center;margin:1.5rem 0}
 iframe{border-radius:12px}
 
+/* Loader (original style + animated dots) */
+.loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  z-index: 99999;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  color: var(--fg);
+  transition: opacity .6s ease, visibility .6s ease;
+}
+.loader-inner { display:flex; gap:8px; align-items:center; }
+.loader .label { font-weight:700; text-transform:lowercase; }
+.loader .dots { display:inline-block; width:36px; text-align:left; }
+.loader .dots span { display:inline-block; width:6px; height:6px; margin-right:4px; border-radius:50%; background:var(--fg); opacity:.18; transform:translateY(0); animation: dot 1s infinite linear; }
+.loader .dots span:nth-child(1){ animation-delay: 0s }
+.loader .dots span:nth-child(2){ animation-delay: 0.12s }
+.loader .dots span:nth-child(3){ animation-delay: 0.24s }
+
+@keyframes dot {
+  0% { opacity: .18; transform: translateY(0) scale(.9); }
+  40% { opacity: 1; transform: translateY(-6px) scale(1.05); }
+  80% { opacity: .18; transform: translateY(0) scale(.95); }
+}
+
+/* Hide when loaded */
+.loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
 /* Grid */
 .image-placeholder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2.5rem}
 
@@ -43,7 +74,7 @@ iframe{border-radius:12px}
 .image-box:hover img.thumb{transform:scale(1.08) translateY(-6px);filter:none}
 .image-box:hover .meta{transform:translateY(0)}
 
-/* Hover preview (floating) */
+/* Hover preview (floating) for gallery items only */
 .hover-preview{
   position:fixed;pointer-events:none;z-index:12000;display:flex;gap:12px;align-items:flex-start;
   transform:translate3d(12px,12px,0) scale(.98);transition:opacity .12s linear,transform .12s linear;
@@ -71,12 +102,39 @@ iframe{border-radius:12px}
 .popup-content img{width:100%;height:auto;max-height:70vh;object-fit:contain;filter:none}
 .popup-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.03);border:none;color:var(--fg);padding:8px 10px;border-radius:8px;cursor:pointer}
 
-/* responsive */
-@media (max-width:700px){.image-box{height:200px}.hover-preview{display:none} }
+/* Collaborators section — more space between gallery and collabs */
+.collab-wrap{margin-top:4rem} /* increased spacing */
+.collab-head{display:flex;justify-content:center;align-items:center;gap:12px;margin:28px 0 8px}
+.collab-head h2{margin:0;font-size:1.6rem}
+.collaborators{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.collaborator{
+  width:160px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center;cursor:default;
+  box-shadow:0 8px 30px rgba(0,0,0,0.6);transition:transform .28s ease,box-shadow .28s ease,opacity .28s;
+  opacity:0; transform:translateY(8px) scale(.98);
+}
+.collaborator.visible{opacity:1;transform:translateY(0) scale(1)}
+.collaborator:hover{transform:translateY(-6px) scale(1.04); box-shadow:0 20px 50px rgba(0,0,0,0.75)}
+.collaborator img{width:100px;height:100px;object-fit:cover;border-radius:6px;margin-bottom:5px;border:0}
+.collaborator .name{font-weight:700;font-size:1rem;margin-bottom:4px}
+.collaborator .role{font-size:.78rem;opacity:.7}
+
+/* small responsive adjustments */
+@media (max-width:700px){.image-box{height:200px}.hover-preview{display:none}.collaborators{gap:.6rem}.collaborator{width:46%;min-width:140px} }
 </style>
 </head>
 <body>
-<div class="container">
+<!-- Loader -->
+<div class="loader" id="siteLoader" role="status" aria-hidden="false">
+  <div class="loader-inner">
+    <div class="label">liminaalizing</div>
+    <div class="dots" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="siteContent" aria-hidden="true">
   <h1>liminaal</h1>
   <div class="spotify-player">
     <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
@@ -98,9 +156,38 @@ iframe{border-radius:12px}
       <div class="meta"><div class="title">Oppressive Cells</div><div class="sub">locked memories</div></div>
     </div>
   </div>
+
+  <!-- Collaborators Section -->
+  <div class="collab-wrap">
+    <div class="collab-head">
+      <h2>Collaborators</h2>
+    </div>
+    <div class="collaborators" id="collaborators">
+      <!-- Kaido -->
+      <div class="collaborator" data-coll-img="/assets/mii/Kaido head.png" data-coll-desc="Kaido — visual & textures contributor.">
+        <img src="/assets/mii/Kaido head.png" alt="Kaido">
+        <div class="name">Kaido</div>
+        <div class="role"></div>
+      </div>
+      <!-- Awitax -->
+      <div class="collaborator" data-coll-img="/assets/mii/Awitax head.png" data-coll-desc="Awitax — audio & arrangement.">
+        <img src="/assets/mii/Awitax head.png" alt="Awitax">
+        <div class="name">Awitax</div>
+        <div class="role"></div>
+      </div>
+      <!-- Template to copy -->
+      <!--
+      <div class="collaborator" data-coll-img="/assets/mii/NAME head.png" data-coll-desc="NAME — role / short bio.">
+        <img src="/assets/mii/NAME head.png" alt="NAME">
+        <div class="name">NAME</div>
+        <div class="role">role</div>
+      </div>
+      -->
+    </div>
+  </div>
 </div>
 
-<!-- hover preview element -->
+<!-- hover preview element (gallery only) -->
 <div class="hover-preview" id="hoverPreview" aria-hidden="true">
   <div class="preview-thumb"><img id="previewThumb" src="" alt=""></div>
   <div class="preview-meta">
@@ -109,7 +196,7 @@ iframe{border-radius:12px}
   </div>
 </div>
 
-<!-- Popup Modal -->
+<!-- Popup Modal (gallery only) -->
 <div class="popup" id="popup" aria-hidden="true">
   <div class="popup-inner" role="dialog" aria-modal="true" aria-labelledby="popup-title">
     <button class="popup-close" id="popup-close" aria-label="Close">✕</button>
@@ -125,6 +212,28 @@ iframe{border-radius:12px}
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  const loader = document.getElementById('siteLoader');
+  const siteContent = document.getElementById('siteContent');
+
+  // Keep loader visible until everything is loaded.
+  // When window 'load' fires, hide loader and reveal content.
+  function hideLoader() {
+    loader.classList.add('hidden');
+    loader.setAttribute('aria-hidden','true');
+    siteContent.setAttribute('aria-hidden','false');
+  }
+  // If the page already loaded before this script, hide immediately
+  if (document.readyState === 'complete') {
+    // small delay so user sees loader briefly
+    setTimeout(hideLoader, 120);
+  } else {
+    window.addEventListener('load', () => {
+      // wait a touch for smoothness, then hide
+      setTimeout(hideLoader, 160);
+    });
+  }
+
+  // Gallery interactions (hover preview + popup)
   const boxes = document.querySelectorAll('.image-box');
   const hoverPreview = document.getElementById('hoverPreview');
   const previewThumb = document.getElementById('previewThumb');
@@ -214,6 +323,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if(isTouch()){
     hoverPreview.style.display = 'none';
   }
+
+  // Collaborator cards entrance only (no hover popups / no click popups)
+  const collaborators = document.querySelectorAll('.collaborator');
+  collaborators.forEach((coll, idx) => {
+    setTimeout(()=> coll.classList.add('visible'), 80 * idx + 120);
+    // keep cursor normal (no pointer) — already set via CSS cursor: default
+    // remove any click behavior to ensure no popup opens
+  });
 });
 </script>
 </body>
