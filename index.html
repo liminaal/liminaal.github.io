@@ -26,7 +26,7 @@ iframe{border-radius:12px}
   box-shadow:0 8px 30px rgba(0,0,0,0.6), inset 0 -20px 40px rgba(0,0,0,0.4);
   transition:transform .45s cubic-bezier(.2,.9,.2,1),box-shadow .45s}
 .image-box img.thumb{width:100%;height:100%;object-fit:cover;display:block;
-  filter:grayscale(1) contrast(1.02) brightness(.9) saturate(.5) hue-rotate(-10deg);
+  filter:none;
   transition:transform .8s ease,filter .45s}
 .image-box::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(ellipse at 30% 20%, rgba(60,100,80,0.03) 0%, transparent 30%),
@@ -40,7 +40,7 @@ iframe{border-radius:12px}
 .image-box .meta .title{font-weight:700;font-size:1.02rem}
 .image-box .meta .sub{font-size:.78rem;opacity:.75}
 .image-box:hover{transform:scale(1.04) rotateX(3deg) rotateY(-2deg)}
-.image-box:hover img.thumb{transform:scale(1.08) translateY(-6px);filter:grayscale(1) contrast(1.08) brightness(.95) saturate(.45) hue-rotate(-12deg)}
+.image-box:hover img.thumb{transform:scale(1.08) translateY(-6px);filter:none}
 .image-box:hover .meta{transform:translateY(0)}
 
 /* Hover preview (floating) */
@@ -53,22 +53,22 @@ iframe{border-radius:12px}
 .hover-preview.active{opacity:1;visibility:visible;transform:translate3d(12px,12px,0) scale(1)}
 .hover-preview .preview-thumb{width:180px;height:120px;border-radius:10px;overflow:hidden;background:#000;flex-shrink:0}
 .hover-preview .preview-thumb img{width:100%;height:100%;object-fit:cover;display:block;
-  filter:grayscale(1) contrast(1.02) saturate(.5) hue-rotate(-6deg)}
+  filter:none}
 .hover-preview .preview-meta{background:linear-gradient(180deg,rgba(10,10,10,0.7),rgba(5,5,5,0.95));padding:10px;border-radius:8px;color:var(--fg);
   max-width:220px}
 .hover-preview .preview-meta h4{margin:0 0 6px;font-size:1rem}
 .hover-preview .preview-meta p{margin:0;font-size:.85rem;color:rgba(245,245,245,.85);opacity:.95}
 
-/* small pointer "nub" for preview (subtle) */
+/* pointer nub */
 .hover-preview::after{content:"";position:absolute;left:10px;top:100%;width:10px;height:10px;background:transparent;filter:blur(.5px)}
 
-/* Popup modal (click) remains available */
+/* Popup modal */
 .popup{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10000}
 .popup.active{opacity:1;pointer-events:auto}
 .popup-inner{max-width:900px;width:calc(100% - 40px);margin:20px;border-radius:14px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,.8);transform:translateY(10px);transition:transform .24s}
 .popup.active .popup-inner{transform:translateY(0)}
 .popup-content{background:linear-gradient(180deg,rgba(20,20,20,.97),rgba(8,8,8,.99));padding:18px;text-align:center;color:var(--fg)}
-.popup-content img{width:100%;height:auto;max-height:70vh;object-fit:contain;filter:grayscale(1) contrast(1.03) saturate(.6) hue-rotate(-8deg)}
+.popup-content img{width:100%;height:auto;max-height:70vh;object-fit:contain;filter:none}
 .popup-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.03);border:none;color:var(--fg);padding:8px 10px;border-radius:8px;cursor:pointer}
 
 /* responsive */
@@ -100,7 +100,7 @@ iframe{border-radius:12px}
   </div>
 </div>
 
-<!-- hover preview element (created once) -->
+<!-- hover preview element -->
 <div class="hover-preview" id="hoverPreview" aria-hidden="true">
   <div class="preview-thumb"><img id="previewThumb" src="" alt=""></div>
   <div class="preview-meta">
@@ -109,7 +109,7 @@ iframe{border-radius:12px}
   </div>
 </div>
 
-<!-- Popup Modal (still opens on click) -->
+<!-- Popup Modal -->
 <div class="popup" id="popup" aria-hidden="true">
   <div class="popup-inner" role="dialog" aria-modal="true" aria-labelledby="popup-title">
     <button class="popup-close" id="popup-close" aria-label="Close">✕</button>
@@ -137,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const popupDesc = document.getElementById('popup-desc');
   const popupClose = document.getElementById('popup-close');
 
-  // helper to try high-res @2x variant (non-destructive)
   function highResPath(path){
     if(!path) return path;
     const parts = path.split('.');
@@ -147,23 +146,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return base + '@2x.' + ext;
   }
 
-  // Hover preview behavior
   boxes.forEach(box => {
     let showTimer = null;
-    // position preview with slight offset and keep within viewport
+
     function positionPreview(x, y){
       const pad = 12;
       const rect = hoverPreview.getBoundingClientRect();
       let left = x + 18;
       let top = y + 18;
-      // keep right edge inside viewport
       if(left + rect.width + pad > window.innerWidth) left = x - rect.width - 18;
       if(top + rect.height + pad > window.innerHeight) top = y - rect.height - 18;
       hoverPreview.style.transform = `translate3d(${left}px, ${top}px, 0) scale(1)`;
     }
 
     box.addEventListener('mouseenter', e => {
-      // small delay to avoid flicker when moving across tiles
       showTimer = setTimeout(() => {
         const imgPath = box.dataset.img || box.querySelector('img.thumb')?.src || '';
         const candidate = highResPath(imgPath);
@@ -174,11 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
         hoverPreview.classList.add('active');
         hoverPreview.setAttribute('aria-hidden','false');
         positionPreview(e.clientX, e.clientY);
-      }, 110); // ~110ms delay before showing
+      }, 110);
     });
 
     box.addEventListener('mousemove', e => {
-      // if preview visible, reposition to cursor
       if(hoverPreview.classList.contains('active')){
         positionPreview(e.clientX, e.clientY);
       }
@@ -190,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
       hoverPreview.setAttribute('aria-hidden','true');
     });
 
-    // click still opens full modal (if you want to disable click-to-open, remove this handler)
     box.addEventListener('click', () => {
       const imgPath = box.dataset.img || box.querySelector('img.thumb')?.src || '';
       const candidate = highResPath(imgPath);
@@ -204,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Close popup handlers
   function closePopup(){
     popup.classList.remove('active');
     popup.setAttribute('aria-hidden','true');
@@ -215,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
   popupClose.addEventListener('click', closePopup);
   document.addEventListener('keydown', e => { if(e.key === 'Escape' && popup.classList.contains('active')) closePopup(); });
 
-  // small optimization: hide preview on touch devices (CSS also hides it by media query)
   function isTouch(){
     return ( 'ontouchstart' in window ) || navigator.maxTouchPoints > 0;
   }
