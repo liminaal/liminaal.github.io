@@ -1,294 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>liminaal</title>
 <meta name="description" content="Liminaal - eerie and aesthetic music gallery." />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'Unbounded', sans-serif;
-  background: #000;
-  color: #f5f5f5;
-  overflow-x: hidden;
+:root{
+  --bg:#050505; --fg:#f5f5f5; --muted:rgba(245,245,245,0.12);
+  --card-radius:12px;
 }
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:'Unbounded',sans-serif}
+.container{max-width:1100px;margin:0 auto;padding:80px 20px}
+h1{text-align:center;margin:0 0 18px;font-size:3rem}
+.spotify-player{display:flex;justify-content:center;margin:1.5rem 0}
+iframe{border-radius:12px}
 
-/* Loader */
-.loader {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-  z-index: 9999;
-  font-size: 2rem;
-  letter-spacing: 2px;
-  animation: fadeOut 1s ease 4s forwards;
-}
-.loader::after {
-  content: '';
-  display: block;
-  width: 60px;
-  aspect-ratio: 2;
-  --_g: no-repeat radial-gradient(circle closest-side,#f5f5f5 90%,#0000);
-  background: 
-    var(--_g) 0%   50%,
-    var(--_g) 50%  50%,
-    var(--_g) 100% 50%;
-  background-size: calc(100%/3) 50%;
-  animation: l3 1s infinite linear;
-  margin-left: 10px;
-}
-@keyframes l3 {
-  20% { background-position:0% 0%, 50% 50%,100% 50%; }
-  40% { background-position:0% 100%, 50% 0%,100% 50%; }
-  60% { background-position:0% 50%, 50% 100%,100% 0%; }
-  80% { background-position:0% 50%, 50% 50%,100% 100%; }
-}
-@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+/* Grid */
+.image-placeholder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2.5rem}
 
-/* Container fade-in */
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 100px 20px;
-  opacity: 0;
-  animation: fadeIn 1s ease 4s forwards;
-}
-@keyframes fadeIn { to { opacity: 1; } }
+/* Tile */
+.image-box{position:relative;height:260px;border-radius:var(--card-radius);overflow:hidden;cursor:pointer;
+  box-shadow:0 8px 30px rgba(0,0,0,0.6), inset 0 -20px 40px rgba(0,0,0,0.4);
+  transition:transform .45s cubic-bezier(.2,.9,.2,1),box-shadow .45s}
+.image-box img.thumb{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(1) contrast(1.02) brightness(.9) saturate(.5) hue-rotate(-10deg);
+  transition:transform .8s ease,filter .45s}
+.image-box::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 20%, rgba(60,100,80,0.03) 0%, transparent 30%),
+             linear-gradient(180deg,rgba(0,0,0,0.18) 10%, rgba(0,0,0,0.45) 70%);mix-blend-mode:multiply}
+.image-box::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+  background-image:linear-gradient(transparent 80%, rgba(0,0,0,0.06) 100%), repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 4px);
+  opacity:.7;mix-blend-mode:overlay;transition:opacity .5s}
+.image-box .meta{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;z-index:5;
+  display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,0.6));transform:translateY(6px);
+  transition:transform .36s}
+.image-box .meta .title{font-weight:700;font-size:1.02rem}
+.image-box .meta .sub{font-size:.78rem;opacity:.75}
+.image-box:hover{transform:scale(1.04) rotateX(3deg) rotateY(-2deg)}
+.image-box:hover img.thumb{transform:scale(1.08) translateY(-6px);filter:grayscale(1) contrast(1.08) brightness(.95) saturate(.45) hue-rotate(-12deg)}
+.image-box:hover .meta{transform:translateY(0)}
 
-h1, h2 {
-  text-align: center;
-  color: #f5f5f5;
-  text-shadow: 0 0 20px rgba(255,255,255,0.2);
+/* Hover preview (floating) */
+.hover-preview{
+  position:fixed;pointer-events:none;z-index:12000;display:flex;gap:12px;align-items:flex-start;
+  transform:translate3d(12px,12px,0) scale(.98);transition:opacity .12s linear,transform .12s linear;
+  opacity:0;visibility:hidden;max-width:420px;
+  filter:drop-shadow(0 10px 40px rgba(0,0,0,0.7));
 }
-h1 { font-size: 3rem; margin-bottom: 2rem; }
-h2 { font-size: 2rem; margin: 3rem 0 1rem; }
+.hover-preview.active{opacity:1;visibility:visible;transform:translate3d(12px,12px,0) scale(1)}
+.hover-preview .preview-thumb{width:180px;height:120px;border-radius:10px;overflow:hidden;background:#000;flex-shrink:0}
+.hover-preview .preview-thumb img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:grayscale(1) contrast(1.02) saturate(.5) hue-rotate(-6deg)}
+.hover-preview .preview-meta{background:linear-gradient(180deg,rgba(10,10,10,0.7),rgba(5,5,5,0.95));padding:10px;border-radius:8px;color:var(--fg);
+  max-width:220px}
+.hover-preview .preview-meta h4{margin:0 0 6px;font-size:1rem}
+.hover-preview .preview-meta p{margin:0;font-size:.85rem;color:rgba(245,245,245,.85);opacity:.95}
 
-.spotify-player {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-}
-iframe {
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(255,255,255,0.1);
-}
+/* small pointer "nub" for preview (subtle) */
+.hover-preview::after{content:"";position:absolute;left:10px;top:100%;width:10px;height:10px;background:transparent;filter:blur(.5px)}
 
-/* Gallery */
-.image-placeholder {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 3rem;
-}
-.image-box {
-  position: relative;
-  width: 100%;
-  height: 250px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  color: rgba(255,255,255,0.3);
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  transition: transform 0.5s ease, box-shadow 0.5s ease, color 0.4s ease;
-  overflow: hidden;
-  perspective: 1000px;
-}
-.image-box::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.05);
-  transition: background 0.4s ease;
-  z-index: 0;
-}
-.image-box::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
-  transform: rotate(30deg);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  z-index: 1;
-}
-.image-box:hover {
-  transform: scale(1.05) rotateX(4deg) rotateY(2deg);
-  box-shadow: 0 0 40px rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.9);
-}
-.image-box:hover::before { background: rgba(255,255,255,0.1); }
-.image-box:hover::after { opacity: 0.5; }
+/* Popup modal (click) remains available */
+.popup{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10000}
+.popup.active{opacity:1;pointer-events:auto}
+.popup-inner{max-width:900px;width:calc(100% - 40px);margin:20px;border-radius:14px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,.8);transform:translateY(10px);transition:transform .24s}
+.popup.active .popup-inner{transform:translateY(0)}
+.popup-content{background:linear-gradient(180deg,rgba(20,20,20,.97),rgba(8,8,8,.99));padding:18px;text-align:center;color:var(--fg)}
+.popup-content img{width:100%;height:auto;max-height:70vh;object-fit:contain;filter:grayscale(1) contrast(1.03) saturate(.6) hue-rotate(-8deg)}
+.popup-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.03);border:none;color:var(--fg);padding:8px 10px;border-radius:8px;cursor:pointer}
 
-/* Collaborators */
-.collaborators {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
-}
-.collaborator {
-  flex: 0 1 140px;
-  max-width: 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255,255,255,0.05);
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(255,255,255,0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.collaborator:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 40px rgba(255,255,255,0.2);
-}
-.collaborator img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  margin-bottom: 1rem;
-  border-radius: 0;
-  border: none;
-}
-.collaborator-name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #f5f5f5;
-}
-
-footer {
-  text-align: center;
-  padding: 2rem 0;
-  font-size: 0.9rem;
-  color: rgba(245,245,245,0.7);
-}
-
-/* Popup Modal */
-.popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 10000;
-}
-.popup.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-.popup-content {
-  background: rgba(20,20,20,0.95);
-  border-radius: 12px;
-  max-width: 600px;
-  width: 90%;
-  padding: 1.5rem;
-  text-align: center;
-  animation: popupIn 0.4s ease forwards;
-  transform: scale(0.8);
-  color: #f5f5f5;
-}
-.popup-content img {
-  max-width: 100%;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-}
-.popup-content h3 {
-  margin: 0.5rem 0;
-}
-.popup-content p {
-  color: rgba(245,245,245,0.8);
-  font-size: 0.95rem;
-}
-@keyframes popupIn {
-  to { transform: scale(1); }
-}
+/* responsive */
+@media (max-width:700px){.image-box{height:200px}.hover-preview{display:none} }
 </style>
 </head>
 <body>
-
-<div class="loader">liminaalizing</div>
-
 <div class="container">
   <h1>liminaal</h1>
   <div class="spotify-player">
     <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   </div>
 
-  <!-- Gallery -->
   <div class="image-placeholder">
-    <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found..." data-img="/assets/images/hospital.png" style="background-image:url('/assets/images/hospital.png')">Abandoned Hospital</div>
-    <div class="image-box" data-title="Cold Loneliness" data-desc="???" data-img="/assets/images/cold-loneliness.jpg" style="background-image:url('/assets/images/cold-loneliness.png')">Cold Loneliness</div>
-    <div class="image-box" data-title="Oppresive Cells" data-desc="Cells in sadness." data-img="/assets/images/oppresive-cells.jpg" style="background-image:url('/assets/images/oppresive-cells.png')">Oppresive Cells</div>
-  </div>
-
-  <!-- Collaborators Section -->
-  <h2>Collaborators</h2>
-  <div class="collaborators">
-    <div class="collaborator">
-      <img src="/assets/mii/Kaido head.png" alt="Kaido">
-      <div class="collaborator-name">Kaido</div>
+    <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found..." data-img="/assets/images/hospital.png">
+      <img class="thumb" src="/assets/images/hospital.png" alt="Abandoned Hospital" loading="lazy" decoding="async">
+      <div class="meta"><div class="title">Abandoned Hospital</div><div class="sub">found - october 2019</div></div>
     </div>
-    <div class="collaborator">
-      <img src="/assets/mii/Awitax head.png" alt="Awitax">
-      <div class="collaborator-name">Awitax</div>
+
+    <div class="image-box" data-title="Cold Loneliness" data-desc="Cold halls and colder hearts." data-img="/assets/images/cold-loneliness.png">
+      <img class="thumb" src="/assets/images/cold-loneliness.png" alt="Cold Loneliness" loading="lazy" decoding="async">
+      <div class="meta"><div class="title">Cold Loneliness</div><div class="sub">somewhere inside</div></div>
+    </div>
+
+    <div class="image-box" data-title="Oppressive Cells" data-desc="Cells full of silence." data-img="/assets/images/oppressive-cells.png">
+      <img class="thumb" src="/assets/images/oppressive-cells.png" alt="Oppressive Cells" loading="lazy" decoding="async">
+      <div class="meta"><div class="title">Oppressive Cells</div><div class="sub">locked memories</div></div>
     </div>
   </div>
 </div>
 
-<!-- Popup Modal -->
-<div class="popup" id="popup">
-  <div class="popup-content">
-    <img src="" alt="Popup Image" id="popup-img">
-    <h3 id="popup-title"></h3>
-    <p id="popup-desc"></p>
+<!-- hover preview element (created once) -->
+<div class="hover-preview" id="hoverPreview" aria-hidden="true">
+  <div class="preview-thumb"><img id="previewThumb" src="" alt=""></div>
+  <div class="preview-meta">
+    <h4 id="previewTitle"></h4>
+    <p id="previewDesc"></p>
   </div>
 </div>
 
-<footer>&copy; liminaal</footer>
+<!-- Popup Modal (still opens on click) -->
+<div class="popup" id="popup" aria-hidden="true">
+  <div class="popup-inner" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+    <button class="popup-close" id="popup-close" aria-label="Close">✕</button>
+    <div class="popup-content">
+      <div class="imgwrap"><img src="" alt="Popup Image" id="popup-img"></div>
+      <h3 id="popup-title"></h3>
+      <p id="popup-desc"></p>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:2rem 0;color:rgba(245,245,245,.6)">&copy; liminaal</footer>
 
 <script>
-// Wait for the page to load
 document.addEventListener('DOMContentLoaded', () => {
   const boxes = document.querySelectorAll('.image-box');
+  const hoverPreview = document.getElementById('hoverPreview');
+  const previewThumb = document.getElementById('previewThumb');
+  const previewTitle = document.getElementById('previewTitle');
+  const previewDesc = document.getElementById('previewDesc');
+
   const popup = document.getElementById('popup');
   const popupImg = document.getElementById('popup-img');
   const popupTitle = document.getElementById('popup-title');
   const popupDesc = document.getElementById('popup-desc');
+  const popupClose = document.getElementById('popup-close');
 
+  // helper to try high-res @2x variant (non-destructive)
+  function highResPath(path){
+    if(!path) return path;
+    const parts = path.split('.');
+    if(parts.length < 2) return path;
+    const ext = parts.pop();
+    const base = parts.join('.');
+    return base + '@2x.' + ext;
+  }
+
+  // Hover preview behavior
   boxes.forEach(box => {
+    let showTimer = null;
+    // position preview with slight offset and keep within viewport
+    function positionPreview(x, y){
+      const pad = 12;
+      const rect = hoverPreview.getBoundingClientRect();
+      let left = x + 18;
+      let top = y + 18;
+      // keep right edge inside viewport
+      if(left + rect.width + pad > window.innerWidth) left = x - rect.width - 18;
+      if(top + rect.height + pad > window.innerHeight) top = y - rect.height - 18;
+      hoverPreview.style.transform = `translate3d(${left}px, ${top}px, 0) scale(1)`;
+    }
+
+    box.addEventListener('mouseenter', e => {
+      // small delay to avoid flicker when moving across tiles
+      showTimer = setTimeout(() => {
+        const imgPath = box.dataset.img || box.querySelector('img.thumb')?.src || '';
+        const candidate = highResPath(imgPath);
+        previewThumb.src = candidate;
+        previewThumb.onerror = () => { previewThumb.onerror = null; previewThumb.src = imgPath; };
+        previewTitle.textContent = box.dataset.title || '';
+        previewDesc.textContent = box.dataset.desc || '';
+        hoverPreview.classList.add('active');
+        hoverPreview.setAttribute('aria-hidden','false');
+        positionPreview(e.clientX, e.clientY);
+      }, 110); // ~110ms delay before showing
+    });
+
+    box.addEventListener('mousemove', e => {
+      // if preview visible, reposition to cursor
+      if(hoverPreview.classList.contains('active')){
+        positionPreview(e.clientX, e.clientY);
+      }
+    });
+
+    box.addEventListener('mouseleave', () => {
+      clearTimeout(showTimer);
+      hoverPreview.classList.remove('active');
+      hoverPreview.setAttribute('aria-hidden','true');
+    });
+
+    // click still opens full modal (if you want to disable click-to-open, remove this handler)
     box.addEventListener('click', () => {
-      popupImg.src = box.dataset.img;
-      popupTitle.textContent = box.dataset.title;
-      popupDesc.textContent = box.dataset.desc;
+      const imgPath = box.dataset.img || box.querySelector('img.thumb')?.src || '';
+      const candidate = highResPath(imgPath);
+      popupImg.src = candidate;
+      popupImg.onerror = () => { popupImg.onerror = null; popupImg.src = imgPath; };
+      popupTitle.textContent = box.dataset.title || '';
+      popupDesc.textContent = box.dataset.desc || '';
       popup.classList.add('active');
+      popup.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
     });
   });
 
-  popup.addEventListener('click', () => {
+  // Close popup handlers
+  function closePopup(){
     popup.classList.remove('active');
-  });
+    popup.setAttribute('aria-hidden','true');
+    popupImg.src = '';
+    document.body.style.overflow = '';
+  }
+  popup.addEventListener('click', e => { if(e.target === popup) closePopup(); });
+  popupClose.addEventListener('click', closePopup);
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && popup.classList.contains('active')) closePopup(); });
+
+  // small optimization: hide preview on touch devices (CSS also hides it by media query)
+  function isTouch(){
+    return ( 'ontouchstart' in window ) || navigator.maxTouchPoints > 0;
+  }
+  if(isTouch()){
+    hoverPreview.style.display = 'none';
+  }
 });
 </script>
 </body>
