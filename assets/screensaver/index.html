@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Screensaver</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        @font-face {
+            font-family: 'ShadowHand';
+            src: url('https://byte-piixel.github.io/public/ShadowHand.ttf') format('truetype');
+            }
+        html, body {
+            border: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            cursor: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background-color: #000; /* Optional: background color */
+            color: #fff; /* Optional: text color */
+            font-family: 'ShadowHand', sans-serif; /* Use Google Font */
+        }
+        #clock {
+            position: absolute;
+            text-align: center;
+        }
+        #time {
+            font-size: 72px; /* Larger font for time */
+            font-weight: bold;
+        }
+        #date {
+            font-size: 36px; /* Smaller font for date */
+        }
+    </style>
+    <!-- import p5 and core extensions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js"></script>
+    <!-- import hsluv for nice colours -->
+    <script src="https://colour-vector-fields.glitch.me/hsluv.js"></script>
+    
+    <!-- import the webpage's javascript file -->
+    <script src="https://colour-vector-fields.glitch.me/script.js"></script>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
+            const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            const locale = navigator.language;
+
+            const timeFormatter = new Intl.DateTimeFormat(locale, timeOptions);
+            const dateFormatter = new Intl.DateTimeFormat(locale, dateOptions);
+
+            const formattedTime = timeFormatter.format(now);
+            const formattedDate = dateFormatter.format(now);
+
+            document.getElementById('time').textContent = formattedTime;
+            document.getElementById('date').textContent = formattedDate;
+        }
+        setInterval(updateTime, 1000); // Update the time every second
+    </script>
+  </head>  
+  <body>
+    <div id="clock">
+        <div id="time"></div>
+        <div id="date"></div>
+    </div>
+  </body>
+</html>
