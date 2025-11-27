@@ -1,420 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>liminaal</title>
-<meta name="description" content="Liminaal - eerie and aesthetic music gallery." />
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Collaborators</title>
 <style>
-:root{
-  --bg:#050505; --fg:#f5f5f5; --muted:rgba(245,245,245,0.12);
-  --card-radius:12px;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:'Unbounded',sans-serif}
-.container{max-width:1100px;margin:0 auto;padding:80px 20px}
-h1{text-align:center;margin:0 0 18px;font-size:3rem}
-.spotify-player{display:flex;justify-content:center;margin:1.5rem 0}
-iframe{border-radius:12px}
+  body {
+    background: #111;
+    color: #fff;
+    font-family: Arial, sans-serif;
+  }
 
-/* Loader */
-.loader {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-  z-index: 99999;
-  font-size: 1.25rem;
-  letter-spacing: 2px;
-  color: var(--fg);
-  transition: opacity .6s ease, visibility .6s ease;
-}
-.loader-inner { display:flex; gap:8px; align-items:center; }
-.loader .label { font-weight:700; text-transform:lowercase; }
-.loader .dots { display:inline-block; width:36px; text-align:left; }
-.loader .dots span { display:inline-block; width:6px; height:6px; margin-right:4px; border-radius:50%; background:var(--fg); opacity:.18; transform:translateY(0); animation: dot 1s infinite linear; }
-.loader .dots span:nth-child(1){ animation-delay: 0s }
-.loader .dots span:nth-child(2){ animation-delay: 0.12s }
-.loader .dots span:nth-child(3){ animation-delay: 0.24s }
+  .collaborators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+    padding: 20px;
+  }
 
-@keyframes dot {
-  0% { opacity: .18; transform: translateY(0) scale(.9); }
-  40% { opacity: 1; transform: translateY(-6px) scale(1.05); }
-  80% { opacity: .18; transform: translateY(0) scale(.95); }
-}
-.loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .collab {
+    position: relative;
+    width: 120px;
+    cursor: pointer;
+    text-align: center;
+  }
 
-/* Grid */
-.image-placeholder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2.5rem}
+  .collab img.preview {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
 
-/* Tile */
-.image-box{position:relative;height:260px;border-radius:var(--card-radius);overflow:hidden;cursor:pointer;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6), inset 0 -20px 40px rgba(0,0,0,0.4);
-  transition:transform .45s cubic-bezier(.2,.9,.2,1),box-shadow .45s}
-.image-box img.thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s ease,filter .45s}
-.image-box::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 30% 20%, rgba(60,100,80,0.03) 0%, transparent 30%),
-             linear-gradient(180deg,rgba(0,0,0,0.18) 10%, rgba(0,0,0,0.45) 70%);mix-blend-mode:multiply}
-.image-box::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
-  background-image:linear-gradient(transparent 80%, rgba(0,0,0,0.06) 100%), repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 4px);
-  opacity:.7;mix-blend-mode:overlay;transition:opacity .5s}
-.image-box .meta{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;z-index:5;
-  display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,0.6));transform:translateY(6px);
-  transition:transform .36s}
-.image-box .meta .title{font-weight:700;font-size:1.02rem}
-.image-box .meta .sub{font-size:.78rem;opacity:.75}
-.image-box:hover{transform:scale(1.04) rotateX(3deg) rotateY(-2deg)}
-.image-box:hover img.thumb{transform:scale(1.08) translateY(-6px);filter:none}
-.image-box:hover .meta{transform:translateY(0)}
+  .popup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
 
-/* Hover preview (gallery only) */
-.hover-preview{
-  position:fixed;pointer-events:none;z-index:12000;display:flex;gap:12px;align-items:flex-start;
-  transform:translate3d(12px,12px,0) scale(.98);transition:opacity .12s linear,transform .12s linear;
-  opacity:0;visibility:hidden;max-width:420px;
-  filter:drop-shadow(0 10px 40px rgba(0,0,0,0.7));
-}
-.hover-preview.active{opacity:1;visibility:visible;transform:translate3d(12px,12px,0) scale(1)}
-.hover-preview .preview-thumb{width:180px;height:120px;border-radius:10px;overflow:hidden;background:#000;flex-shrink:0}
-.hover-preview .preview-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.hover-preview .preview-meta{background:linear-gradient(180deg,rgba(10,10,10,0.7),rgba(5,5,5,0.95));padding:10px;border-radius:8px;color:var(--fg);max-width:220px}
-.hover-preview .preview-meta h4{margin:0 0 6px;font-size:1rem}
-.hover-preview .preview-meta p{margin:0;font-size:.85rem;color:rgba(245,245,245,.85);opacity:.95}
+  .popup-content {
+    background: #161616;
+    border-radius: 10px;
+    width: 70%;
+    max-width: 800px;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    gap: 25px;
+  }
 
-/* Popup modal (gallery) */
-.popup{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10000}
-.popup.active{opacity:1;pointer-events:auto}
-.popup-inner{max-width:900px;width:calc(100% - 40px);margin:20px;border-radius:14px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,.8);transform:translateY(10px);transition:transform .24s}
-.popup.active .popup-inner{transform:translateY(0)}
-.popup-content{background:linear-gradient(180deg,rgba(20,20,20,.97),rgba(8,8,8,.99));padding:18px;text-align:center;color:var(--fg)}
-.popup-content img{width:100%;height:auto;max-height:70vh;object-fit:contain;filter:none}
-.popup-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.03);border:none;color:var(--fg);padding:8px 10px;border-radius:8px;cursor:pointer}
+  .popup img.full {
+    width: 50%;
+    object-fit: contain;
+  }
 
-/* Collaborators section */
-.collab-wrap{margin-top:4rem}
-.collab-head{display:flex;justify-content:center;align-items:center;gap:12px;margin:28px 0 8px}
-.collab-head h2{margin:0;font-size:1.6rem}
-.collaborators{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
-.collaborator{
-  width:160px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center;cursor:pointer;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6);transition:transform .28s ease,box-shadow .28s ease,opacity .28s;
-  opacity:0; transform:translateY(8px) scale(.98);
-}
-.collaborator.visible{opacity:1;transform:translateY(0) scale(1)}
-.collaborator:hover{transform:translateY(-6px) scale(1.04); box-shadow:0 20px 50px rgba(0,0,0,0.75)}
-.collaborator img{width:100px;height:100px;object-fit:cover;border-radius:6px;margin-bottom:5px;border:0}
-.collaborator .name{font-weight:700;font-size:1rem;margin-bottom:4px}
-.collaborator .role{font-size:.78rem;opacity:.7}
+  .popup-text {
+    width: 50%;
+    font-size: 1.2em;
+  }
 
-/* Collaborator popup: image takes entire left column, text on right */
-.popup-collab{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10001}
-.popup-collab.active{opacity:1;pointer-events:auto}
-.popup-collab .popup-inner{
-  max-width:1000px;
-  width:calc(100% - 40px);
-  margin:20px;
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 20px 80px rgba(0,0,0,.8);
-  transform:translateY(10px);
-  transition:transform .24s;
-  background:linear-gradient(180deg,rgba(20,20,20,.97),rgba(8,8,8,.99));
-  display:flex;
-  min-height:56vh; /* nice full height for image */
-}
-
-/* LEFT: image — takes full left side, covers area */
-.popup-collab .collab-left{
-  flex: 0 0 62%; /* image column width on large screens */
-  min-width:220px;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-.popup-collab .collab-left img{
-  width:100%;
-  height:100%;
-  object-fit:cover; /* fills the left column completely */
-  display:block;
-}
-
-/* RIGHT: text column */
-.popup-collab .collab-right{
-  flex:1;
-  padding:34px 28px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:12px;
-  color:var(--fg);
-}
-.popup-collab .collab-right h3{margin:0;font-size:1.6rem}
-.popup-collab .collab-right p{margin:0;opacity:.92;line-height:1.5}
-.popup-collab .popup-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.03);border:none;color:var(--fg);padding:8px 10px;border-radius:8px;cursor:pointer;z-index:10002}
-
-/* Responsive: stack on small screens so image sits on top and text below */
-@media (max-width:900px){
-  .popup-collab .popup-inner{flex-direction:column;min-height:auto}
-  .popup-collab .collab-left{flex-basis:auto;height:48vw;max-height:58vh}
-  .popup-collab .collab-right{padding:18px}
-}
-@media (max-width:700px){
-  .image-box{height:200px}
-  .hover-preview{display:none}
-  .collaborators{gap:.6rem}
-  .collaborator{width:46%;min-width:140px}
-}
+  .close {
+    position: absolute;
+    right: 25px;
+    top: 10px;
+    font-size: 2.5em;
+    cursor: pointer;
+    color: #fff;
+  }
 </style>
 </head>
 <body>
-<!-- Loader -->
-<div class="loader" id="siteLoader" role="status" aria-hidden="false">
-  <div class="loader-inner">
-    <div class="label">liminaalizing</div>
-    <div class="dots" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-</div>
 
-<div class="container" id="siteContent" aria-hidden="true">
-  <h1>liminaal</h1>
-  <div class="spotify-player">
-    <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-  </div>
+<section class="collaborators">
 
-  <div class="image-placeholder">
-    <div class="image-box" data-title="Abandoned Hospital" data-desc="Abandoned hospital found..." data-img="/assets/images/hospital.png">
-      <img class="thumb" src="/assets/images/hospital.png" alt="Abandoned Hospital" loading="lazy" decoding="async">
-      <div class="meta"><div class="title">Abandoned Hospital</div><div class="sub">found - november 2025</div></div>
-    </div>
+  <!-- COLLAB #1 -->
+  <div class="collab" onclick="openPopup('popup1')">
+    <img class="preview" src="collabs/awitax_head.png" alt="">
+    Awitax
 
-    <div class="image-box" data-title="Cold Loneliness" data-desc="Cold halls and colder hearts." data-img="/assets/images/cold-loneliness.jpg">
-      <img class="thumb" src="/assets/images/cold-loneliness.jpg" alt="Cold Loneliness" loading="lazy" decoding="async">
-      <div class="meta"><div class="title">Cold Loneliness</div><div class="sub">somewhere inside</div></div>
-    </div>
-
-    <div class="image-box" data-title="Oppressive Cells" data-desc="Cells full of silence." data-img="/assets/images/oppressive-cells.jpg">
-      <img class="thumb" src="/assets/images/oppressive-cells.jpg" alt="Oppressive Cells" loading="lazy" decoding="async">
-      <div class="meta"><div class="title">Oppressive Cells</div><div class="sub">locked memories</div></div>
-    </div>
-  </div>
-
-  <!-- Collaborators Section -->
-  <div class="collab-wrap">
-    <div class="collab-head">
-      <h2>Collaborators</h2>
-    </div>
-    <div class="collaborators" id="collaborators">
-      <!-- Kaido -->
-      <div class="collaborator" data-coll-img="/assets/mii/Kaido full.png" data-coll-desc="Kaido — visual & textures contributor.">
-        <img src="/assets/mii/Kaido head.png" alt="Kaido">
-        <div class="name">Kaido</div>
-        <div class="role"></div>
+    <div id="popup1" class="popup">
+      <div class="popup-content">
+        <img class="full" src="collabs/awitax_full.png" alt="">
+        <div class="popup-text">
+          <h2>Awitax</h2>
+          <p>Contribution text goes here.</p>
+        </div>
       </div>
-      <!-- Awitax -->
-      <div class="collaborator" data-coll-img="/assets/mii/Awitax full.png" data-coll-desc="Awitax — audio & arrangement.">
-        <img src="/assets/mii/Awitax head.png" alt="Awitax">
-        <div class="name">Awitax</div>
-        <div class="role"></div>
+      <div class="close" onclick="closePopup(event,'popup1')">&times;</div>
+    </div>
+  </div>
+
+  <!-- COLLAB #2 -->
+  <div class="collab" onclick="openPopup('popup2')">
+    <img class="preview" src="collabs/kaido_head.png" alt="">
+    Kaido
+
+    <div id="popup2" class="popup">
+      <div class="popup-content">
+        <img class="full" src="collabs/kaido_full.png" alt="">
+        <div class="popup-text">
+          <h2>Kaido</h2>
+          <p>Contribution text goes here.</p>
+        </div>
       </div>
-      <!-- Template to copy -->
-      <!--
-      <div class="collaborator" data-coll-img="/assets/mii/NAME head.png" data-coll-desc="NAME — role / short bio.">
-        <img src="/assets/mii/NAME head.png" alt="NAME">
-        <div class="name">NAME</div>
-        <div class="role">role</div>
-      </div>
-      -->
+      <div class="close" onclick="closePopup(event,'popup2')">&times;</div>
     </div>
   </div>
-</div>
 
-<!-- hover preview element (gallery only) -->
-<div class="hover-preview" id="hoverPreview" aria-hidden="true">
-  <div class="preview-thumb"><img id="previewThumb" src="" alt=""></div>
-  <div class="preview-meta">
-    <h4 id="previewTitle"></h4>
-    <p id="previewDesc"></p>
-  </div>
-</div>
-
-<!-- Popup Modal (gallery only) -->
-<div class="popup" id="popup" aria-hidden="true">
-  <div class="popup-inner" role="dialog" aria-modal="true" aria-labelledby="popup-title">
-    <button class="popup-close" id="popup-close" aria-label="Close">✕</button>
-    <div class="popup-content">
-      <div class="imgwrap"><img src="" alt="Popup Image" id="popup-img"></div>
-      <h3 id="popup-title"></h3>
-      <p id="popup-desc"></p>
-    </div>
-  </div>
-</div>
-
-<!-- Collaborator Popup Modal (image full left, text right) -->
-<div class="popup-collab" id="popup-collab" aria-hidden="true">
-  <div class="popup-inner" role="dialog" aria-modal="true" aria-labelledby="popup-collab-title">
-    <button class="popup-close" id="popup-collab-close" aria-label="Close">✕</button>
-    <div class="collab-left">
-      <img id="popup-collab-img" src="" alt="Collaborator image">
-    </div>
-    <div class="collab-right">
-      <h3 id="popup-collab-title"></h3>
-      <p id="popup-collab-desc"></p>
-    </div>
-  </div>
-</div>
-
-<footer style="text-align:center;padding:2rem 0;color:rgba(245,245,245,.6)">&copy; liminaal</footer>
+</section>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const loader = document.getElementById('siteLoader');
-  const siteContent = document.getElementById('siteContent');
+function openPopup(id) {
+  document.getElementById(id).style.display = "flex";
+}
 
-  function hideLoader() {
-    loader.classList.add('hidden');
-    loader.setAttribute('aria-hidden','true');
-    siteContent.setAttribute('aria-hidden','false');
-  }
-  if (document.readyState === 'complete') {
-    setTimeout(hideLoader, 120);
-  } else {
-    window.addEventListener('load', () => setTimeout(hideLoader, 160));
-  }
-
-  function highResPath(path){
-    if(!path) return path;
-    const parts = path.split('.');
-    if(parts.length < 2) return path;
-    const ext = parts.pop();
-    const base = parts.join('.');
-    return base + '@2x.' + ext;
-  }
-
-  // Gallery interactions
-  const boxes = document.querySelectorAll('.image-box');
-  const hoverPreview = document.getElementById('hoverPreview');
-  const previewThumb = document.getElementById('previewThumb');
-  const previewTitle = document.getElementById('previewTitle');
-  const previewDesc = document.getElementById('previewDesc');
-
-  const popup = document.getElementById('popup');
-  const popupImg = document.getElementById('popup-img');
-  const popupTitle = document.getElementById('popup-title');
-  const popupDesc = document.getElementById('popup-desc');
-  const popupClose = document.getElementById('popup-close');
-
-  boxes.forEach(box => {
-    let showTimer = null;
-
-    function positionPreview(x, y){
-      const pad = 12;
-      const rect = hoverPreview.getBoundingClientRect();
-      let left = x + 18;
-      let top = y + 18;
-      if(left + rect.width + pad > window.innerWidth) left = x - rect.width - 18;
-      if(top + rect.height + pad > window.innerHeight) top = y - rect.height - 18;
-      hoverPreview.style.transform = `translate3d(${left}px, ${top}px, 0) scale(1)`;
-    }
-
-    box.addEventListener('mouseenter', e => {
-      showTimer = setTimeout(() => {
-        const imgPath = box.dataset.img || box.querySelector('img.thumb')?.src || '';
-        const candidate = highResPath(imgPath);
-        previewThumb.src = candidate;
-        previewThumb.onerror = () => { previewThumb.onerror = null; previewThumb.src = imgPath; };
-        previewTitle.textContent = box.dataset.title || '';
-        previewDesc.textContent = box.dataset.desc || '';
-        hoverPreview.classList.add('active');
-        hoverPreview.setAttribute('aria-hidden','false');
-        positionPreview(e.clientX, e.clientY);
-      }, 110);
-    });
-
-    box.addEventListener('mousemove', e => {
-      if(hoverPreview.classList.contains('active')){
-        positionPreview(e.clientX, e.clientY);
-      }
-    });
-
-    box.addEventListener('mouseleave', () => {
-      clearTimeout(showTimer);
-      hoverPreview.classList.remove('active');
-      hoverPreview.setAttribute('aria-hidden','true');
-    });
-
-    box.addEventListener('click', () => {
-      const imgPath = box.dataset.img || box.querySelector('img.thumb')?.src || '';
-      const candidate = highResPath(imgPath);
-      popupImg.src = candidate;
-      popupImg.onerror = () => { popupImg.onerror = null; popupImg.src = imgPath; };
-      popupTitle.textContent = box.dataset.title || '';
-      popupDesc.textContent = box.dataset.desc || '';
-      popup.classList.add('active');
-      popup.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    });
-  });
-
-  function closePopup(){
-    popup.classList.remove('active');
-    popup.setAttribute('aria-hidden','true');
-    popupImg.src = '';
-    document.body.style.overflow = '';
-  }
-  popup.addEventListener('click', e => { if(e.target === popup) closePopup(); });
-  popupClose.addEventListener('click', closePopup);
-  document.addEventListener('keydown', e => { if(e.key === 'Escape' && popup.classList.contains('active')) closePopup(); });
-
-  if(( 'ontouchstart' in window ) || navigator.maxTouchPoints > 0){
-    hoverPreview.style.display = 'none';
-  }
-
-  // Collaborators: entrance + popup
-  const collaborators = document.querySelectorAll('.collaborator');
-  const popupCollab = document.getElementById('popup-collab');
-  const popupCollabImg = document.getElementById('popup-collab-img');
-  const popupCollabTitle = document.getElementById('popup-collab-title');
-  const popupCollabDesc = document.getElementById('popup-collab-desc');
-  const popupCollabClose = document.getElementById('popup-collab-close');
-
-  collaborators.forEach((coll, idx) => {
-    setTimeout(()=> coll.classList.add('visible'), 80 * idx + 120);
-
-    coll.addEventListener('click', () => {
-      const imgPath = coll.dataset.collImg || coll.querySelector('img')?.src || '';
-      const candidate = highResPath(imgPath);
-      popupCollabImg.src = candidate;
-      popupCollabImg.onerror = () => { popupCollabImg.onerror = null; popupCollabImg.src = imgPath; };
-
-      const name = coll.querySelector('.name')?.textContent || '';
-      popupCollabTitle.textContent = name;
-      popupCollabDesc.textContent = coll.dataset.collDesc || '';
-
-      popupCollab.classList.add('active');
-      popupCollab.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    });
-  });
-
-  function closeCollabPopup(){
-    popupCollab.classList.remove('active');
-    popupCollab.setAttribute('aria-hidden','true');
-    popupCollabImg.src = '';
-    document.body.style.overflow = '';
-  }
-  popupCollab.addEventListener('click', e => { if(e.target === popupCollab) closeCollabPopup(); });
-  popupCollabClose.addEventListener('click', closeCollabPopup);
-  document.addEventListener('keydown', e => { if(e.key === 'Escape' && popupCollab.classList.contains('active')) closeCollabPopup(); });
-
-});
+function closePopup(event,id) {
+  event.stopPropagation();
+  document.getElementById(id).style.display = "none";
+}
 </script>
+
 </body>
 </html>
