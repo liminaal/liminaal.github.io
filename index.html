@@ -7,6 +7,25 @@
 <meta name="description" content="Liminaal - eerie and aesthetic music gallery." />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
 <style>
+  #screensaver {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000; /* Optional: set a background color */
+            z-index: 9999; /* Ensure it appears on top */
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            pointer-events: none; /* Prevent interaction with the iframe by default */
+        }
+        #screensaver.show {
+            opacity: 1;
+            pointer-events: auto; /* Allow interaction with the screensaver iframe */
+        }
+        #iframe-ss {
+            pointer-events: none; /* Prevent interaction with the iframe by default */
+        }
 :root{
   --bg:#050505; --fg:#f5f5f5; --muted:rgba(245,245,245,0.12);
   --card-radius:12px;
@@ -151,6 +170,9 @@ iframe{border-radius:12px}
 </div>
 
 <div class="container" id="siteContent" aria-hidden="true">
+  <div id="screensaver">
+        <iframe id="iframe-ss" src="https://byte-piixel.github.io/tools/screensaver" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
   <h1>liminaal</h1>
   <div class="spotify-player">
     <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
@@ -416,6 +438,24 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', e => { if(e.key === 'Escape' && popupCollab.classList.contains('active')) closeCollabPopup(); });
 
 });
+</script>
+  <script>
+    let idleTimer;
+    function resetTimer() {
+        clearTimeout(idleTimer);
+        const screensaver = document.getElementById('screensaver');
+        screensaver.classList.remove('show');
+        screensaver.classList.add('hide'); // Smooth disappearing animation
+
+        idleTimer = setTimeout(() => {
+            screensaver.classList.remove('hide');
+            screensaver.classList.add('show'); // Smooth appearing animation
+        }, 300000); // 5 minutes
+    }
+
+    document.addEventListener('mousemove', resetTimer);
+    document.addEventListener('keypress', resetTimer);
+    resetTimer(); // Start the timer on page load
 </script>
 </body>
 </html>
