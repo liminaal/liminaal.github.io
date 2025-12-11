@@ -7,25 +7,31 @@
 <meta name="description" content="liminaal - eerie and aesthetic music gallery." />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
 <style>
+  /* Screensaver */
   #screensaver {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000; /* Optional: set a background color */
-            z-index: 9999; /* Ensure it appears on top */
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            pointer-events: none; /* Prevent interaction with the iframe by default */
-        }
-        #screensaver.show {
-            opacity: 1;
-            pointer-events: auto; /* Allow interaction with the screensaver iframe */
-        }
-        #iframe-ss {
-            pointer-events: none; /* Prevent interaction with the iframe by default */
-        }
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    pointer-events: none;
+  }
+  #screensaver.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #screensaver.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #iframe-ss {
+    pointer-events: none;
+  }
+
 :root{
   --bg:#050505; --fg:#f5f5f5; --muted:rgba(245,245,245,0.12);
   --card-radius:12px;
@@ -170,10 +176,12 @@ iframe{border-radius:12px}
 </div>
 
 <div class="container" id="siteContent" aria-hidden="true">
-  <div id="screensaver">
-        <iframe id="iframe-ss" src="/assets/screensaver" width="100%" height="100%" frameborder="0"></iframe>
-    </div>
+  <div id="screensaver" class="hide">
+    <iframe id="iframe-ss" src="/assets/screensaver" width="100%" height="100%" frameborder="0"></iframe>
+  </div>
+
   <h1>liminaal</h1>
+
   <div class="spotify-player">
     <iframe src="https://open.spotify.com/embed/playlist/5xzeVvVZU6mCfSwALg1yNp?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   </div>
@@ -205,7 +213,8 @@ iframe{border-radius:12px}
       <div class="collaborator"
            data-coll-img="/assets/mii/Kaido head.png"
            data-coll-img-full="/assets/mii/Kaido full.png"
-           data-coll-desc="Kaido — a young boy that likes photographing & coding.">
+           data-coll-desc="Kaido — a young boy that likes photographing & coding.
+he started when he was 11 y/o creating a Minecraft bot, then started taking ambiental photos when he was 13.">
         <img src="/assets/mii/Kaido head.png" alt="Kaido">
         <div class="name">Kaido</div>
         <div class="role"></div>
@@ -221,12 +230,12 @@ iframe{border-radius:12px}
         <div class="role"></div>
       </div>
 
-      <!-- Add more collaborators by copying this block and updating data attributes -->
+      <!-- Example block for adding more collaborators -->
       <!--
       <div class="collaborator"
            data-coll-img="/assets/mii/NAME head.png"
            data-coll-img-full="/assets/mii/NAME full.png"
-           data-coll-desc="NAME — role.">
+           data-coll-desc="NAME — role description here.">
         <img src="/assets/mii/NAME head.png" alt="NAME">
         <div class="name">NAME</div>
         <div class="role"></div>
@@ -279,21 +288,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const siteContent = document.getElementById('siteContent');
 
   // Keep loader visible until everything is loaded.
-  // When window 'load' fires, hide loader and reveal content.
   function hideLoader() {
     loader.classList.add('hidden');
     loader.setAttribute('aria-hidden','true');
     siteContent.setAttribute('aria-hidden','false');
   }
-  // If the page already loaded before this script, hide immediately
   if (document.readyState === 'complete') {
-    // small delay so user sees loader briefly
     setTimeout(hideLoader, 120);
   } else {
-    window.addEventListener('load', () => {
-      // wait a touch for smoothness, then hide
-      setTimeout(hideLoader, 160);
-    });
+    window.addEventListener('load', () => setTimeout(hideLoader, 160));
   }
 
   // Helper: prefer high-res variant (filename@2x.ext) if available
@@ -396,28 +399,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const popupCollabDesc = document.getElementById('popup-collab-desc');
   const popupCollabClose = document.getElementById('popup-collab-close');
 
+  // staggered entrance
   collaborators.forEach((coll, idx) => {
-    // staggered entrance
     setTimeout(()=> coll.classList.add('visible'), 80 * idx + 120);
+  });
 
+  // click handler for collaborators
+  collaborators.forEach(coll => {
     coll.addEventListener('click', () => {
-      // prefer full PNG if provided
-      // support attributes both data-coll-img-full and camelCase dataset
       const fullAttr = coll.getAttribute('data-coll-img-full') || coll.dataset.collImgFull || '';
       const headAttr = coll.getAttribute('data-coll-img') || coll.dataset.collImg || '';
       const tileImg = coll.querySelector('img')?.src || '';
-      // choose full if exists, else head, else tile
-      let chosen = fullAttr || headAttr || tileImg || '';
-
-      // try high-res variant first
+      const chosen = fullAttr || headAttr || tileImg || '';
       const candidate = highResPath(chosen);
+
+      // set image with fallback
       popupCollabImg.src = candidate;
-      // if error, fallback to chosen (which may already be the fallback)
       popupCollabImg.onerror = () => { popupCollabImg.onerror = null; popupCollabImg.src = chosen; };
 
       const name = coll.querySelector('.name')?.textContent || '';
+      const desc = coll.getAttribute('data-coll-desc') || coll.dataset.collDesc || '';
+
       popupCollabTitle.textContent = name;
-      popupCollabDesc.textContent = coll.getAttribute('data-coll-desc') || coll.dataset.collDesc || '';
+      // allow newlines in the data attribute to show as <br>
+      popupCollabDesc.innerHTML = (desc || "").replace(/\n/g, "<br>");
 
       popupCollab.classList.add('active');
       popupCollab.setAttribute('aria-hidden','false');
@@ -439,23 +444,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
-  <script>
-    let idleTimer;
-    function resetTimer() {
-        clearTimeout(idleTimer);
-        const screensaver = document.getElementById('screensaver');
-        screensaver.classList.remove('show');
-        screensaver.classList.add('hide'); // Smooth disappearing animation
 
-        idleTimer = setTimeout(() => {
-            screensaver.classList.remove('hide');
-            screensaver.classList.add('show'); // Smooth appearing animation
-        }, 60000); // 5 minutes
+<script>
+  // Screensaver idle timer (separate to avoid accidental closure by missing DOM events)
+  (function(){
+    let idleTimer;
+    const SCREENSAVER_DELAY = 5 * 60 * 1000; // 5 minutes
+    const screensaver = document.getElementById('screensaver');
+
+    function showScreensaver(){
+      screensaver.classList.remove('hide');
+      screensaver.classList.add('show');
+    }
+    function hideScreensaver(){
+      screensaver.classList.remove('show');
+      screensaver.classList.add('hide');
     }
 
-    document.addEventListener('mousemove', resetTimer);
-    document.addEventListener('keypress', resetTimer);
-    resetTimer(); // Start the timer on page load
+    function resetTimer() {
+      clearTimeout(idleTimer);
+      hideScreensaver();
+      idleTimer = setTimeout(showScreensaver, SCREENSAVER_DELAY);
+    }
+
+    // events that count as activity
+    ['mousemove','mousedown','touchstart','keydown','scroll'].forEach(ev => {
+      document.addEventListener(ev, resetTimer, {passive:true});
+    });
+
+    // start on load
+    resetTimer();
+  })();
 </script>
 </body>
 </html>
