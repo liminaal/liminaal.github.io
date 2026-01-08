@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Straw.page</title>
+
+  <!-- Darumadrop One font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Darumadrop+One&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #ffc5d3;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Darumadrop One", sans-serif;
+    }
+
+    .age-wrapper {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    #age {
+      margin: 0;
+      font-size: 4rem;
+      line-height: 1;
+    }
+
+    .years-text {
+      margin-left: 0.4rem;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="age-wrapper">
+    <h1 id="age">0</h1>
+    <span class="years-text">años</span>
+  </div>
+
+  <script>
+    const birthDate = new Date(2009, 4, 4); // 4 May 2009 (month is 0-based)
+
+    function updateAge() {
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+
+      const hadBirthday =
+        today.getMonth() > birthDate.getMonth() ||
+        (today.getMonth() === birthDate.getMonth() &&
+         today.getDate() >= birthDate.getDate());
+
+      if (!hadBirthday) age--;
+
+      document.getElementById("age").textContent = age;
+    }
+
+    updateAge();
+    setInterval(updateAge, 60 * 1000);
+  </script>
+</body>
+</html>
