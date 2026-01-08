@@ -21,6 +21,12 @@
       font-family: "Darumadrop One", sans-serif;
     }
 
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .age-wrapper {
       display: flex;
       align-items: flex-end;
@@ -37,17 +43,40 @@
       font-size: 1.5rem;
       line-height: 1;
     }
+
+    .volver-btn {
+      margin-top: 15px;
+      padding: 12px 28px;
+      font-size: 1.6rem;
+      font-family: "Darumadrop One", sans-serif;
+      background-color: #ffd6e7;
+      color: #000;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .volver-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+    }
   </style>
 </head>
 
 <body>
-  <div class="age-wrapper">
-    <h1 id="age">0</h1>
-    <span class="years-text">años</span>
+  <div class="container">
+    <div class="age-wrapper">
+      <h1 id="age">0</h1>
+      <span class="years-text">años!!</span>
+    </div>
+
+    <button class="volver-btn" onclick="goBackOrClose()">Volver</button>
   </div>
 
   <script>
-    const birthDate = new Date(2009, 4, 4); // 4 May 2009 (month is 0-based)
+    const birthDate = new Date(2009, 4, 4); // 4 May 2009
 
     function updateAge() {
       const today = new Date();
@@ -61,6 +90,17 @@
       if (!hadBirthday) age--;
 
       document.getElementById("age").textContent = age;
+    }
+
+    function goBackOrClose() {
+      window.close();
+
+      // Fallback if close is blocked
+      setTimeout(() => {
+        if (!window.closed) {
+          window.history.back();
+        }
+      }, 100);
     }
 
     updateAge();
