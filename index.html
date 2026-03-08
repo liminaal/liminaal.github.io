@@ -7,14 +7,47 @@
 <meta name="description" content="liminaal - eerie and aesthetic music gallery." />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  /* Screensaver */
+  /* === Amorphous Drifting Glow — Bottom-Left ⇄ Top-Right (looping) === */
+  .liminal-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -9999;
+    overflow: hidden;
+  }
+
+  .drift-glow {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    left: -150px;
+    opacity: 0.6;
+    filter: blur(40px);
+    mix-blend-mode: screen;
+    animation: drift-br-tr 40s infinite alternate ease-in-out;
+    background:
+      radial-gradient(circle at 40% 30%, rgba(230, 194, 90, 0.4) 0%, transparent 50%),
+      radial-gradient(circle at 70% 60%, rgba(212, 168, 78, 0.35) 0%, transparent 60%),
+      radial-gradient(circle at 20% 80%, rgba(240, 214, 140, 0.3) 0%, transparent 70%);
+  }
+
+  @keyframes drift-br-tr {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(calc(100vw + 200px), calc(-100vh - 200px)); }
+  }
+
+  /* === Screensaver === */
   #screensaver {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: #1a170b;
     z-index: 9999;
     opacity: 0;
     transition: opacity 1s ease-in-out;
@@ -33,24 +66,25 @@
   }
 
 :root{
-  --bg:#050505; --fg:#f5f5f5; --muted:rgba(245,245,245,0.12);
+  --bg:#1a170b;
+  --fg:#f0e6c2;
+  --muted:rgba(240,230,194,0.14);
   --card-radius:12px;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:'Unbounded',sans-serif}
-.container{max-width:1100px;margin:0 auto;padding:80px 20px}
-h1{text-align:center;margin:0 0 18px;font-size:3rem}
-.spotify-player{display:flex;justify-content:center;margin:1.5rem 0}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:'Unbounded',sans-serif;position:relative;z-index:1}
+.container{max-width:1100px;margin:0 auto;padding:80px 20px;position:relative;z-index:2}
+h1{text-align:center;margin:0 0 18px;font-size:3rem;color:var(--fg)}
+.spotify-player{display:flex;justify-content:center;margin:1.5rem 0;position:relative;z-index:3}
 iframe{border-radius:12px}
 
-/* Loader (original style + animated dots) */
 .loader {
   position: fixed;
   inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #000;
+  background: #1a170b;
   z-index: 99999;
   font-size: 1.25rem;
   letter-spacing: 2px;
@@ -71,100 +105,301 @@ iframe{border-radius:12px}
   80% { opacity: .18; transform: translateY(0) scale(.95); }
 }
 
-/* Hide when loaded */
 .loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-/* Grid */
-.image-placeholder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2.5rem}
+.image-placeholder{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2.5rem;position:relative;z-index:3}
 
-/* Tile */
-.image-box{position:relative;height:260px;border-radius:var(--card-radius);overflow:hidden;cursor:pointer;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6), inset 0 -20px 40px rgba(0,0,0,0.4);
-  transition:transform .45s cubic-bezier(.2,.9,.2,1),box-shadow .45s}
-.image-box img.thumb{width:100%;height:100%;object-fit:cover;display:block;
+.image-box{
+  position:relative;
+  height:260px;
+  border-radius:var(--card-radius);
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5), inset 0 -20px 40px rgba(0,0,0,0.4);
+  transition:transform .45s cubic-bezier(.2,.9,.2,1),box-shadow .45s;
+}
+.image-box img.thumb{
+  width:100%;height:100%;object-fit:cover;display:block;
   filter:none;
-  transition:transform .8s ease,filter .45s}
-.image-box::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 30% 20%, rgba(60,100,80,0.03) 0%, transparent 30%),
-             linear-gradient(180deg,rgba(0,0,0,0.18) 10%, rgba(0,0,0,0.45) 70%);mix-blend-mode:multiply}
-.image-box::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
-  background-image:linear-gradient(transparent 80%, rgba(0,0,0,0.06) 100%), repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 4px);
-  opacity:.7;mix-blend-mode:overlay;transition:opacity .5s}
-.image-box .meta{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;z-index:5;
-  display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,0.6));transform:translateY(6px);
-  transition:transform .36s}
+  transition:transform .8s ease,filter .45s;
+}
+.image-box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(60,50,30,0.08) 0%, transparent 30%),
+    linear-gradient(180deg, rgba(0,0,0,0.15) 10%, rgba(0,0,0,0.4) 70%);
+  mix-blend-mode:multiply;
+}
+.image-box::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  background-image:
+    linear-gradient(transparent 80%, rgba(0,0,0,0.08) 100%),
+    repeating-linear-gradient(90deg, rgba(240,230,194,0.03) 0 1px, transparent 1px 4px);
+  opacity:.7;
+  mix-blend-mode:overlay;
+  transition:opacity .5s;
+}
+.image-box .meta{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  padding:12px 14px;
+  z-index:5;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:linear-gradient(180deg,rgba(0,0,0,0),rgba(26,23,11,0.75));
+  transform:translateY(6px);
+  transition:transform .36s;
+  color:var(--fg);
+}
 .image-box .meta .title{font-weight:700;font-size:1.02rem}
 .image-box .meta .sub{font-size:.78rem;opacity:.75}
 .image-box:hover{transform:scale(1.04) rotateX(3deg) rotateY(-2deg)}
 .image-box:hover img.thumb{transform:scale(1.08) translateY(-6px);filter:none}
 .image-box:hover .meta{transform:translateY(0)}
 
-/* Hover preview (floating) for gallery items only */
 .hover-preview{
-  position:fixed;pointer-events:none;z-index:12000;display:flex;gap:12px;align-items:flex-start;
-  transform:translate3d(12px,12px,0) scale(.98);transition:opacity .12s linear,transform .12s linear;
-  opacity:0;visibility:hidden;max-width:420px;
+  position:fixed;
+  pointer-events:none;
+  z-index:12000;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  transform:translate3d(12px,12px,0) scale(.98);
+  transition:opacity .12s linear,transform .12s linear;
+  opacity:0;
+  visibility:hidden;
+  max-width:420px;
   filter:drop-shadow(0 10px 40px rgba(0,0,0,0.7));
 }
-.hover-preview.active{opacity:1;visibility:visible;transform:translate3d(12px,12px,0) scale(1)}
-.hover-preview .preview-thumb{width:180px;height:120px;border-radius:10px;overflow:hidden;background:#000;flex-shrink:0}
-.hover-preview .preview-thumb img{width:100%;height:100%;object-fit:cover;display:block;
-  filter:none}
-.hover-preview .preview-meta{background:linear-gradient(180deg,rgba(10,10,10,0.7),rgba(5,5,5,0.95));padding:10px;border-radius:8px;color:var(--fg);
-  max-width:220px}
+.hover-preview.active{
+  opacity:1;
+  visibility:visible;
+  transform:translate3d(12px,12px,0) scale(1);
+}
+.hover-preview .preview-thumb{
+  width:180px;
+  height:120px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#1a170b;
+  flex-shrink:0;
+}
+.hover-preview .preview-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  filter:none;
+}
+.hover-preview .preview-meta{
+  background:linear-gradient(180deg,rgba(26,23,11,0.85),rgba(18,16,8,0.95));
+  padding:10px;
+  border-radius:8px;
+  color:var(--fg);
+  max-width:220px;
+}
 .hover-preview .preview-meta h4{margin:0 0 6px;font-size:1rem}
-.hover-preview .preview-meta p{margin:0;font-size:.85rem;color:rgba(245,245,245,.85);opacity:.95}
+.hover-preview .preview-meta p{margin:0;font-size:.85rem;color:rgba(240,230,194,.9);opacity:.95}
 
-/* pointer nub */
-.hover-preview::after{content:"";position:absolute;left:10px;top:100%;width:10px;height:10px;background:transparent;filter:blur(.5px)}
+.hover-preview::after{
+  content:"";
+  position:absolute;
+  left:10px;
+  top:100%;
+  width:10px;
+  height:10px;
+  background:transparent;
+  filter:blur(.5px);
+}
 
-/* Popup modal (gallery) */
-.popup{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10000}
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(26,23,11,.92);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s;
+  z-index:10000;
+}
 .popup.active{opacity:1;pointer-events:auto}
-.popup-inner{max-width:900px;width:calc(100% - 40px);margin:20px;border-radius:14px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,.8);transform:translateY(10px);transition:transform .24s}
+.popup-inner{
+  max-width:900px;
+  width:calc(100% - 40px);
+  margin:20px;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 20px 80px rgba(0,0,0,.8);
+  transform:translateY(10px);
+  transition:transform .24s;
+}
 .popup.active .popup-inner{transform:translateY(0)}
-.popup-content{background:linear-gradient(180deg,rgba(20,20,20,.97),rgba(8,8,8,.99));padding:18px;text-align:center;color:var(--fg)}
-.popup-content img{width:100%;height:auto;max-height:70vh;object-fit:contain;filter:none}
-.popup-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.03);border:none;color:var(--fg);padding:8px 10px;border-radius:8px;cursor:pointer}
+.popup-content{
+  background:linear-gradient(180deg,rgba(30,27,12,.97),rgba(18,16,8,.99));
+  padding:18px;
+  text-align:center;
+  color:var(--fg);
+}
+.popup-content img{
+  width:100%;
+  height:auto;
+  max-height:70vh;
+  object-fit:contain;
+  filter:none;
+}
+.popup-close{
+  position:absolute;
+  top:18px;
+  right:20px;
+  background:rgba(240,230,194,.04);
+  border:none;
+  color:var(--fg);
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
+}
 
-/* Collaborators section — more space between gallery and collabs */
-.collab-wrap{margin-top:4rem} /* increased spacing */
+.collab-wrap{margin-top:4rem;position:relative;z-index:3}
 .collab-head{display:flex;justify-content:center;align-items:center;gap:12px;margin:28px 0 8px}
 .collab-head h2{margin:0;font-size:1.6rem}
 .collaborators{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
 .collaborator{
-  width:160px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center;cursor:pointer;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6);transition:transform .28s ease,box-shadow .28s ease,opacity .28s;
-  opacity:0; transform:translateY(8px) scale(.98);
+  width:160px;
+  background:linear-gradient(180deg, rgba(240,230,194,0.03), rgba(240,230,194,0.01));
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  transition:transform .28s ease,box-shadow .28s ease,opacity .28s;
+  opacity:0;
+  transform:translateY(8px) scale(.98);
 }
 .collaborator.visible{opacity:1;transform:translateY(0) scale(1)}
-.collaborator:hover{transform:translateY(-6px) scale(1.04); box-shadow:0 20px 50px rgba(0,0,0,0.75)}
-.collaborator img{width:100px;height:100px;object-fit:cover;border-radius:6px;margin-bottom:5px;border:0;background:transparent}
-.collaborator .name{font-weight:700;font-size:1rem;margin-bottom:4px}
-.collaborator .role{font-size:.78rem;opacity:.7}
+.collaborator:hover{
+  transform:translateY(-6px) scale(1.04);
+  box-shadow:0 20px 50px rgba(0,0,0,0.7);
+}
+.collaborator img{
+  width:100px;
+  height:100px;
+  object-fit:cover;
+  border-radius:6px;
+  margin-bottom:5px;
+  border:0;
+  background:transparent;
+}
+.collaborator .name{font-weight:700;font-size:1rem;margin-bottom:4px;color:var(--fg)}
+.collaborator .role{font-size:.78rem;opacity:.7;color:var(--fg)}
 
-/* Collaborator popup (image left, text right) */
-.popup-collab{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10001}
+.popup-collab{
+  position:fixed;
+  inset:0;
+  background:rgba(26,23,11,.92);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s;
+  z-index:10001;
+}
 .popup-collab.active{opacity:1;pointer-events:auto}
-.popup-collab .popup-inner{max-width:920px;width:calc(100% - 40px);margin:20px;border-radius:14px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,.8);transform:translateY(10px);transition:transform .24s;background:linear-gradient(180deg,rgba(20,20,20,.97),rgba(8,8,8,.99));display:flex;gap:0}
+.popup-collab .popup-inner{
+  max-width:920px;
+  width:calc(100% - 40px);
+  margin:20px;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 20px 80px rgba(0,0,0,.8);
+  transform:translateY(10px);
+  transition:transform .24s;
+  background:linear-gradient(180deg,rgba(30,27,12,.97),rgba(18,16,8,.99));
+  display:flex;
+  gap:0;
+}
 .popup-collab.active .popup-inner{transform:translateY(0)}
-.popup-collab .collab-left{flex: 0 0 50%;min-width:220px;max-height:70vh;overflow:hidden;display:flex;align-items:center;justify-content:center;background:transparent}
-.popup-collab .collab-left img{width:100%;height:100%;object-fit:cover;display:block;background:transparent}
-.popup-collab .collab-right{flex:1;padding:20px 22px;color:var(--fg);display:flex;flex-direction:column;justify-content:center;gap:8px}
+.popup-collab .collab-left{
+  flex: 0 0 50%;
+  min-width:220px;
+  max-height:70vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+}
+.popup-collab .collab-left img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  background:transparent;
+}
+.popup-collab .collab-right{
+  flex:1;
+  padding:20px 22px;
+  color:var(--fg);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:8px;
+}
 .popup-collab .collab-right h3{margin:0;font-size:1.4rem}
 .popup-collab .collab-right p{margin:0;opacity:.92;line-height:1.45}
-.popup-collab .popup-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.03);border:none;color:var(--fg);padding:8px 10px;border-radius:8px;cursor:pointer;z-index:10002}
+.popup-collab .popup-close{
+  position:absolute;
+  top:18px;
+  right:20px;
+  background:rgba(240,230,194,.04);
+  border:none;
+  color:var(--fg);
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  z-index:10002;
+}
 
-/* small responsive adjustments */
 @media (max-width:900px){
   .popup-collab .popup-inner{flex-direction:column}
   .popup-collab .collab-left{flex-basis:auto;height:45vw;max-height:55vh}
 }
-@media (max-width:700px){.image-box{height:200px}.hover-preview{display:none}.collaborators{gap:.6rem}.collaborator{width:46%;min-width:140px} }
+@media (max-width:700px){
+  .image-box{height:200px}
+  .hover-preview{display:none}
+  .collaborators{gap:.6rem}
+  .collaborator{width:46%;min-width:140px}
+}
+
+/* Remove any interfering pseudo-elements */
+body::before,
+body::after,
+.container::before,
+.container::after {
+  display: none !important;
+}
 </style>
 </head>
 <body>
+
+<!-- Amorphous drifting glow -->
+<div class="liminal-bg">
+  <div class="drift-glow"></div>
+</div>
+
 <!-- Loader -->
 <div class="loader" id="siteLoader" role="status" aria-hidden="false">
   <div class="loader-inner">
@@ -214,7 +449,6 @@ iframe{border-radius:12px}
       <h2>Collaborators</h2>
     </div>
     <div class="collaborators" id="collaborators">
-      <!-- Kaido -->
       <div class="collaborator"
            data-coll-img="/assets/mii/Kaido head.png"
            data-coll-img-full="/assets/mii/Kaido full.png"
@@ -225,7 +459,6 @@ he started when he was 11 y/o creating a Minecraft bot, then started taking ambi
         <div class="role"></div>
       </div>
 
-      <!-- Awitax -->
       <div class="collaborator"
            data-coll-img="/assets/mii/Awitax head.png"
            data-coll-img-full="/assets/mii/Awitax full.png"
@@ -234,23 +467,11 @@ he started when he was 11 y/o creating a Minecraft bot, then started taking ambi
         <div class="name">Awitax</div>
         <div class="role"></div>
       </div>
-
-      <!-- Example block for adding more collaborators -->
-      <!--
-      <div class="collaborator"
-           data-coll-img="/assets/mii/NAME head.png"
-           data-coll-img-full="/assets/mii/NAME full.png"
-           data-coll-desc="NAME — role description here.">
-        <img src="/assets/mii/NAME head.png" alt="NAME">
-        <div class="name">NAME</div>
-        <div class="role"></div>
-      </div>
-      -->
     </div>
   </div>
 </div>
 
-<!-- hover preview element (gallery only) -->
+<!-- hover preview element -->
 <div class="hover-preview" id="hoverPreview" aria-hidden="true">
   <div class="preview-thumb"><img id="previewThumb" src="" alt=""></div>
   <div class="preview-meta">
@@ -259,7 +480,7 @@ he started when he was 11 y/o creating a Minecraft bot, then started taking ambi
   </div>
 </div>
 
-<!-- Popup Modal (gallery only) -->
+<!-- Popup Modal (gallery) -->
 <div class="popup" id="popup" aria-hidden="true">
   <div class="popup-inner" role="dialog" aria-modal="true" aria-labelledby="popup-title">
     <button class="popup-close" id="popup-close" aria-label="Close">✕</button>
@@ -271,7 +492,7 @@ he started when he was 11 y/o creating a Minecraft bot, then started taking ambi
   </div>
 </div>
 
-<!-- Collaborator Popup Modal (image left, text right) -->
+<!-- Collaborator Popup -->
 <div class="popup-collab" id="popup-collab" aria-hidden="true">
   <div class="popup-inner" role="dialog" aria-modal="true" aria-labelledby="popup-collab-title">
     <button class="popup-close" id="popup-collab-close" aria-label="Close">✕</button>
@@ -285,14 +506,13 @@ he started when he was 11 y/o creating a Minecraft bot, then started taking ambi
   </div>
 </div>
 
-<footer style="text-align:center;padding:2rem 0;color:rgba(245,245,245,.6)">&copy; liminaal</footer>
+<footer style="text-align:center;padding:2rem 0;color:rgba(240,230,194,.6)">&copy; liminaal</footer>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const loader = document.getElementById('siteLoader');
   const siteContent = document.getElementById('siteContent');
 
-  // Keep loader visible until everything is loaded.
   function hideLoader() {
     loader.classList.add('hidden');
     loader.setAttribute('aria-hidden','true');
@@ -304,7 +524,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('load', () => setTimeout(hideLoader, 160));
   }
 
-  // Helper: prefer high-res variant (filename@2x.ext) if available
   function highResPath(path){
     if(!path) return path;
     const parts = path.split('.');
@@ -314,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return base + '@2x.' + ext;
   }
 
-  // Gallery interactions (hover preview + popup)
+  // Gallery interactions
   const boxes = document.querySelectorAll('.image-box');
   const hoverPreview = document.getElementById('hoverPreview');
   const previewThumb = document.getElementById('previewThumb');
@@ -396,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hoverPreview.style.display = 'none';
   }
 
-  // Collaborator cards entrance + click -> collaborator popup
+  // Collaborators
   const collaborators = document.querySelectorAll('.collaborator');
   const popupCollab = document.getElementById('popup-collab');
   const popupCollabImg = document.getElementById('popup-collab-img');
@@ -404,12 +623,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const popupCollabDesc = document.getElementById('popup-collab-desc');
   const popupCollabClose = document.getElementById('popup-collab-close');
 
-  // staggered entrance
   collaborators.forEach((coll, idx) => {
     setTimeout(()=> coll.classList.add('visible'), 80 * idx + 120);
   });
 
-  // click handler for collaborators
   collaborators.forEach(coll => {
     coll.addEventListener('click', () => {
       const fullAttr = coll.getAttribute('data-coll-img-full') || coll.dataset.collImgFull || '';
@@ -418,7 +635,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const chosen = fullAttr || headAttr || tileImg || '';
       const candidate = highResPath(chosen);
 
-      // set image with fallback
       popupCollabImg.src = candidate;
       popupCollabImg.onerror = () => { popupCollabImg.onerror = null; popupCollabImg.src = chosen; };
 
@@ -426,7 +642,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const desc = coll.getAttribute('data-coll-desc') || coll.dataset.collDesc || '';
 
       popupCollabTitle.textContent = name;
-      // allow newlines in the data attribute to show as <br>
       popupCollabDesc.innerHTML = (desc || "").replace(/\n/g, "<br>");
 
       popupCollab.classList.add('active');
@@ -441,20 +656,17 @@ document.addEventListener('DOMContentLoaded', () => {
     popupCollabImg.src = '';
     document.body.style.overflow = '';
   }
-  // click outside to close
   popupCollab.addEventListener('click', e => { if(e.target === popupCollab) closeCollabPopup(); });
   popupCollabClose.addEventListener('click', closeCollabPopup);
-  // ESC closes collab popup too
   document.addEventListener('keydown', e => { if(e.key === 'Escape' && popupCollab.classList.contains('active')) closeCollabPopup(); });
 
 });
 </script>
 
 <script>
-  // Screensaver idle timer (separate to avoid accidental closure by missing DOM events)
   (function(){
     let idleTimer;
-    const SCREENSAVER_DELAY = 5 * 60 * 1000; // 5 minutes
+    const SCREENSAVER_DELAY = 5 * 60 * 1000;
     const screensaver = document.getElementById('screensaver');
 
     function showScreensaver(){
@@ -472,12 +684,10 @@ document.addEventListener('DOMContentLoaded', () => {
       idleTimer = setTimeout(showScreensaver, SCREENSAVER_DELAY);
     }
 
-    // events that count as activity
     ['mousemove','mousedown','touchstart','keydown','scroll'].forEach(ev => {
       document.addEventListener(ev, resetTimer, {passive:true});
     });
 
-    // start on load
     resetTimer();
   })();
 </script>
